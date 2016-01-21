@@ -1,0 +1,4 @@
+SidusEAVFilterBundle
+===========
+
+Work in progress.
