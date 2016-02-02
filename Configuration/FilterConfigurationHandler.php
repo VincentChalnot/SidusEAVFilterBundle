@@ -48,7 +48,7 @@ class FilterConfigurationHandler extends BaseFilterConfigurationHandler
             $this->queryBuilder
                 ->addSelect('value')
                 ->leftJoin($alias . '.values', 'value') // Manual join on values
-                ->andWhere("{$alias}.familyCode IN (:families)")
+                ->andWhere("{$alias}.family IN (:families)")
                 ->setParameter('families', $this->family->getMatchingCodes());
         }
         return $this->queryBuilder;

@@ -5,3 +5,11 @@ parameters:
     sidus_filter.filter.type.date_range.class: Sidus\EAVFilterBundle\Filter\Type\DateRangeFilterType
     sidus_filter.filter.type.text.class: Sidus\EAVFilterBundle\Filter\Type\TextFilterType
     sidus_filter.filter.type.choice.class: Sidus\EAVFilterBundle\Filter\Type\ChoiceFilterType
+
+    sidus_eav_filter.elastica.data_value_subscriber.class: Sidus\EAVFilterBundle\Events\DataValuesSubscriber
+
+services:
+    sidus_eav_filter.elastica.data_value_subscriber:
+        class: "%sidus_eav_filter.elastica.data_value_subscriber.class%"
+        tags:
+            - { name: kernel.event_subscriber }

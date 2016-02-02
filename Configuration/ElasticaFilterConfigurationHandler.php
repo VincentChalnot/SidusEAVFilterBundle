@@ -59,7 +59,7 @@ class ElasticaFilterConfigurationHandler extends FilterConfigurationHandler
             $this->esQuery = new Query();
             $this->boolQuery = new Query\Bool();
             $this->esQuery->setQuery($this->boolQuery);
-            $familyQuery = new Query\Match('familyCode', implode(' ', $this->family->getMatchingCodes()));
+            $familyQuery = new Query\Match('family', implode(' ', $this->family->getMatchingCodes()));
             $this->boolQuery->addMust($familyQuery);
         }
         return $this->esQuery;
