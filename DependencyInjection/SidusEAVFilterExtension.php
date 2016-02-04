@@ -6,6 +6,7 @@ use Sidus\FilterBundle\DependencyInjection\Configuration;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Exception\BadMethodCallException;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Parameter;
@@ -20,6 +21,8 @@ class SidusEAVFilterExtension extends Extension
 {
     /**
      * {@inheritdoc}
+     * @throws \Exception
+     * @throws BadMethodCallException
      */
     public function load(array $configs, ContainerBuilder $container)
     {
@@ -39,6 +42,7 @@ class SidusEAVFilterExtension extends Extension
      * @param string $code
      * @param array $configuration
      * @param ContainerBuilder $container
+     * @throws BadMethodCallException
      */
     protected function addConfigurationServiceDefinition($code, array $configuration, ContainerBuilder $container)
     {

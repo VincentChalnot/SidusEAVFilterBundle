@@ -26,13 +26,17 @@ class FilterConfigurationHandler extends BaseFilterConfigurationHandler
      * @param FilterFactory $filterFactory
      * @param array $configuration
      * @param FamilyConfigurationHandler $familyConfigurationHandler
+     * @throws UnexpectedValueException
      */
     public function __construct($code, Registry $doctrine, FilterFactory $filterFactory, array $configuration = [], FamilyConfigurationHandler $familyConfigurationHandler)
     {
-        if (!$familyConfigurationHandler->hasFamily($code)) {
-            throw new UnexpectedValueException("Filter configuration must match the family code, '{$code}' given");
+
+        if (!$familyConfigurationHandler->hasFamily($configuration['family'])) {
+            throw new UnexpectedValueException("Unknown family '{$configuration['family']}'");
         }
-        $this->family = $familyConfigurationHandler->getFamily($code);
+        $this->family = $familyConfigurationHandler->getFamily($configuration['family']);
+        unset($configuration['family']);
+        $configuration['entity'] = $this->family->getDataClass();
         parent::__construct($code, $doctrine, $filterFactory, $configuration);
     }
 
@@ -94,5 +98,23 @@ class FilterConfigurationHandler extends BaseFilterConfigurationHandler
             $direction = $sortConfig->getDirection() ? 'DESC' : 'ASC'; // null or false both default to ASC
             $qb->addOrderBy($fullColumnReference, $direction);
         }
+    }
+
+    /**
+     * @return FamilyInterface
+     */
+    public function getFamily()
+    {
+        return $this->family;
+    }
+
+    /**
+     * @param FamilyInterface $family
+     * @return FilterConfigurationHandler
+     */
+    public function setFamily($family)
+    {
+        $this->family = $family;
+        return $this;
     }
 }
