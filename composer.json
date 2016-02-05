@@ -18,7 +18,6 @@
     "psr-0": { "Sidus\\EAVFilterBundle": "" }
   },
   "require": {
-    "php": ">=5.4",
     "sidus/eav-model-bundle": "dev-master",
     "sidus/filter-bundle": "dev-master",
     "friendsofsymfony/elastica-bundle": "~3.1",
