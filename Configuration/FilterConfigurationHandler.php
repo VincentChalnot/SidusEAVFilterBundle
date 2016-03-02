@@ -2,10 +2,13 @@
 
 namespace Sidus\EAVFilterBundle\Configuration;
 
+use ArrayIterator;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Sidus\EAVModelBundle\Configuration\FamilyConfigurationHandler;
+use Sidus\EAVModelBundle\Entity\Data;
 use Sidus\EAVModelBundle\Model\FamilyInterface;
 use Sidus\FilterBundle\Configuration\FilterConfigurationHandler as BaseFilterConfigurationHandler;
 use Sidus\FilterBundle\DTO\SortConfig;
@@ -50,8 +53,9 @@ class FilterConfigurationHandler extends BaseFilterConfigurationHandler
             $this->alias = $alias;
             $this->queryBuilder = $this->repository->createQueryBuilder($alias);
             $this->queryBuilder
-                ->addSelect('value')
-                ->leftJoin($alias . '.values', 'value') // Manual join on values
+                // Was supposed to be more performant but is in fact 500% slower... disabling it for the moment
+//                ->addSelect('value')
+//                ->leftJoin($alias . '.values', 'value') // Manual join on values
                 ->andWhere("{$alias}.family IN (:families)")
                 ->setParameter('families', $this->family->getMatchingCodes());
         }
@@ -116,5 +120,26 @@ class FilterConfigurationHandler extends BaseFilterConfigurationHandler
     {
         $this->family = $family;
         return $this;
+    }
+
+    /**
+     * EAV optimization: fetching all values at the same time
+     * @return array|\Traversable
+     */
+    public function getResults()
+    {
+        /** @var ArrayIterator $datas */
+        $datas = $this->pager->getCurrentPageResults();
+        /** @var EntityRepository $repo */
+        $repo = $this->doctrine->getRepository($this->family->getDataClass());
+        // No need to actually fetch the results, the already existing data will be hydrated automatically
+        $repo->createQueryBuilder('d')
+            ->addSelect('v')
+            ->leftJoin('d.values', 'v')
+            ->where('d.id IN (:datas)')
+            ->setParameter('datas', $datas->getArrayCopy())
+            ->getQuery()
+            ->getResult();
+        return $datas;
     }
 }
