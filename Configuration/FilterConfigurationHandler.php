@@ -68,14 +68,10 @@ class FilterConfigurationHandler extends BaseFilterConfigurationHandler
      */
     protected function parseConfiguration(array $configuration)
     {
-        $this->entityReference = $configuration['entity'];
-        $this->repository = $this->doctrine->getRepository($this->entityReference);
         foreach ($configuration['fields'] as $code => $field) {
-            $field['options']['family'] = $this->family;
-            $this->addFilter($this->filterFactory->create($code, $field));
+            $configuration['fields'][$code]['options']['family'] = $this->family;
         }
-        $this->sortable = $configuration['sortable'];
-        $this->sortConfig = new SortConfig();
+        parent::parseConfiguration($configuration);
     }
 
     /**

@@ -101,7 +101,7 @@ class ElasticaFilterConfigurationHandler extends FilterConfigurationHandler
         $filterForm = $form->get(self::FILTERS_FORM_NAME);
         foreach ($this->getFilters() as $filter) {
             if (!$filter instanceof ElasticaFilterInterface) {
-                throw new \Exception("Unsupported filter type for elastic search"); // @todo refactor with better exception
+                throw new \Exception('Unsupported filter type for elastic search'); // @todo refactor with better exception
             }
             $filter->handleESForm($filterForm->get($filter->getCode()), $query);
         }
@@ -129,11 +129,12 @@ class ElasticaFilterConfigurationHandler extends FilterConfigurationHandler
     /**
      * @param Query $query
      * @param Request $request
+     * @throws \Exception
      */
     protected function applyESPager(Query $query, Request $request)
     {
         $this->pager = $this->getFinder()->findPaginated($query);
-        $this->pager->setMaxPerPage(20);
+        $this->pager->setMaxPerPage($this->resultsPerPage);
         $this->pager->setCurrentPage($request->get('page', 1));
     }
 }
