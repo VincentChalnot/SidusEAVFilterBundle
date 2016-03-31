@@ -35,18 +35,17 @@ class ElasticaFilterConfigurationHandler extends FilterConfigurationHandler
     }
 
     /**
-     * @param Request $request
+     * @param null $selectedPage
      * @throws \Exception
      */
-    public function handleRequest(Request $request)
+    protected function handleForm($selectedPage = null)
     {
         if ($this->esQuery) {
-            $this->getForm()->handleRequest($request);
             $this->applyESSort($this->getESQuery());
-            $this->applyESFilters($this->getBoolQuery()); // @todo maybe do it in a form event ?
-            $this->applyESPager($this->getESQuery(), $request);
+            $this->applyESFilters($this->getBoolQuery());
+            $this->applyESPager($this->getESQuery(), $selectedPage);
         } else {
-           parent::handleRequest($request);
+            parent::handleForm($selectedPage);
         }
     }
 

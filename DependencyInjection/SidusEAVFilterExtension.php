@@ -2,7 +2,6 @@
 
 namespace Sidus\EAVFilterBundle\DependencyInjection;
 
-use Sidus\FilterBundle\DependencyInjection\Configuration;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;

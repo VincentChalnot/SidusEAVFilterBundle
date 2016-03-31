@@ -125,7 +125,7 @@ class FilterConfigurationHandler extends BaseFilterConfigurationHandler
     public function getResults()
     {
         /** @var ArrayIterator $datas */
-        $datas = $this->pager->getCurrentPageResults();
+        $datas = $this->getPager()->getCurrentPageResults();
         /** @var EntityRepository $repo */
         $repo = $this->doctrine->getRepository($this->family->getDataClass());
         // No need to actually fetch the results, the already existing data will be hydrated automatically
