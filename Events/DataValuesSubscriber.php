@@ -5,7 +5,7 @@ namespace Sidus\EAVFilterBundle\Events;
 use Doctrine\Common\Collections\ArrayCollection;
 use Elastica\Document;
 use FOS\ElasticaBundle\Event\TransformEvent;
-use Sidus\EAVModelBundle\Entity\Data;
+use Sidus\EAVModelBundle\Entity\DataInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class DataValuesSubscriber implements EventSubscriberInterface
@@ -22,7 +22,7 @@ class DataValuesSubscriber implements EventSubscriberInterface
         /** @var Document $document */
         $document = $event->getDocument();
         $data = $event->getObject();
-        if (!$data instanceof Data) {
+        if (!$data instanceof DataInterface) {
             return;
         }
         foreach ($data->getFamily()->getAttributes() as $attribute) {

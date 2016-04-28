@@ -17,7 +17,7 @@ class ElasticaFilter extends Filter implements ElasticaFilterInterface
     {
         $filterType = $this->getFilterType();
         if (!$filterType instanceof ElasticaFilterTypeInterface) {
-            throw new \Exception("Unsupported filter type for elastic search"); // @todo refactor with better exception
+            throw new \Exception('Unsupported filter type for elastic search'); // @todo refactor with better exception
         }
         $filterType->handleESForm($this, $form, $query);
     }
