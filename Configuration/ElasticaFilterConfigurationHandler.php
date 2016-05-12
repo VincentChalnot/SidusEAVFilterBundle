@@ -12,7 +12,7 @@ class ElasticaFilterConfigurationHandler extends FilterConfigurationHandler
     /** @var Query */
     protected $esQuery;
 
-    /** @var Query\Bool */
+    /** @var Query\BoolQuery */
     protected $boolQuery;
 
     /** @var TransformedFinder */
@@ -56,7 +56,7 @@ class ElasticaFilterConfigurationHandler extends FilterConfigurationHandler
     {
         if (!$this->esQuery) {
             $this->esQuery = new Query();
-            $this->boolQuery = new Query\Bool();
+            $this->boolQuery = new Query\BoolQuery();
             $this->esQuery->setQuery($this->boolQuery);
             $familyQuery = new Query\Match('family', implode(' ', $this->family->getMatchingCodes()));
             $this->boolQuery->addMust($familyQuery);
@@ -75,7 +75,7 @@ class ElasticaFilterConfigurationHandler extends FilterConfigurationHandler
     }
 
     /**
-     * @return Query\Bool
+     * @return Query\BoolQuery
      */
     public function getBoolQuery()
     {
@@ -83,7 +83,7 @@ class ElasticaFilterConfigurationHandler extends FilterConfigurationHandler
     }
 
     /**
-     * @param Query\Bool $boolQuery
+     * @param Query\BoolQuery $boolQuery
      */
     public function setBoolQuery($boolQuery)
     {
@@ -91,10 +91,10 @@ class ElasticaFilterConfigurationHandler extends FilterConfigurationHandler
     }
 
     /**
-     * @param Query\Bool $query
+     * @param Query\BoolQuery $query
      * @throws \Exception
      */
-    protected function applyESFilters(Query\Bool $query)
+    protected function applyESFilters(Query\BoolQuery $query)
     {
         $form = $this->getForm();
         $filterForm = $form->get(self::FILTERS_FORM_NAME);

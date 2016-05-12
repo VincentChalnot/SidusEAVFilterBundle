@@ -14,9 +14,9 @@ class TextFilterType extends BaseTextFilterType implements ElasticaFilterTypeInt
     /**
      * @param ElasticaFilterInterface|FilterInterface $filter
      * @param FormInterface $form
-     * @param Query\Bool $query
+     * @param Query\BoolQuery $query
      */
-    public function handleESForm(ElasticaFilterInterface $filter, FormInterface $form, Query\Bool $query)
+    public function handleESForm(ElasticaFilterInterface $filter, FormInterface $form, Query\BoolQuery $query)
     {
         $data = $form->getData();
         if (!$data) {

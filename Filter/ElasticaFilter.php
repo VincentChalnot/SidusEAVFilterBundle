@@ -10,10 +10,10 @@ class ElasticaFilter extends Filter implements ElasticaFilterInterface
 {
     /**
      * @param FormInterface $form
-     * @param Query\Bool $query
+     * @param Query\BoolQuery $query
      * @throws \Exception
      */
-    public function handleESForm(FormInterface $form, Query\Bool $query)
+    public function handleESForm(FormInterface $form, Query\BoolQuery $query)
     {
         $filterType = $this->getFilterType();
         if (!$filterType instanceof ElasticaFilterTypeInterface) {
