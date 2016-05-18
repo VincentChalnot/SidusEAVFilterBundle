@@ -9,11 +9,16 @@ use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Sidus\EAVModelBundle\Configuration\FamilyConfigurationHandler;
 use Sidus\EAVModelBundle\Model\FamilyInterface;
-use Sidus\FilterBundle\Configuration\FilterConfigurationHandler as BaseFilterConfigurationHandler;
+use Sidus\FilterBundle\Configuration\FilterConfigurationHandler;
 use Sidus\FilterBundle\Filter\FilterFactory;
 use UnexpectedValueException;
 
-class FilterConfigurationHandler extends BaseFilterConfigurationHandler
+/**
+ * Handles filtering on EAV model
+ *
+ * @author Vincent Chalnot <vincent@sidus.fr>
+ */
+class EAVFilterConfigurationHandler extends FilterConfigurationHandler
 {
     /** @var FamilyInterface */
     protected $family;
@@ -22,16 +27,20 @@ class FilterConfigurationHandler extends BaseFilterConfigurationHandler
     protected $valueAlias;
 
     /**
-     * @param string $code
-     * @param Registry $doctrine
-     * @param FilterFactory $filterFactory
-     * @param array $configuration
+     * @param string                     $code
+     * @param Registry                   $doctrine
+     * @param FilterFactory              $filterFactory
+     * @param array                      $configuration
      * @param FamilyConfigurationHandler $familyConfigurationHandler
      * @throws UnexpectedValueException
      */
-    public function __construct($code, Registry $doctrine, FilterFactory $filterFactory, array $configuration = [], FamilyConfigurationHandler $familyConfigurationHandler)
-    {
-
+    public function __construct(
+        $code,
+        Registry $doctrine,
+        FilterFactory $filterFactory,
+        array $configuration,
+        FamilyConfigurationHandler $familyConfigurationHandler
+    ) {
         if (!$familyConfigurationHandler->hasFamily($configuration['family'])) {
             throw new UnexpectedValueException("Unknown family '{$configuration['family']}'");
         }
@@ -57,7 +66,50 @@ class FilterConfigurationHandler extends BaseFilterConfigurationHandler
                 ->andWhere("{$alias}.family IN (:families)")
                 ->setParameter('families', $this->family->getMatchingCodes());
         }
+
         return $this->queryBuilder;
+    }
+
+    /**
+     * @return FamilyInterface
+     */
+    public function getFamily()
+    {
+        return $this->family;
+    }
+
+    /**
+     * @param FamilyInterface $family
+     * @return EAVFilterConfigurationHandler
+     */
+    public function setFamily($family)
+    {
+        $this->family = $family;
+
+        return $this;
+    }
+
+    /**
+     * EAV optimization: fetching all values at the same time
+     *
+     * @return array|\Traversable
+     */
+    public function getResults()
+    {
+        /** @var ArrayIterator $datas */
+        $datas = $this->getPager()->getCurrentPageResults();
+        /** @var EntityRepository $repo */
+        $repo = $this->doctrine->getRepository($this->family->getDataClass());
+        // No need to actually fetch the results, the already existing data will be hydrated automatically
+        $repo->createQueryBuilder('d')
+            ->addSelect('v')
+            ->leftJoin('d.values', 'v')
+            ->where('d.id IN (:datas)')
+            ->setParameter('datas', $datas->getArrayCopy())
+            ->getQuery()
+            ->getResult();
+
+        return $datas;
     }
 
     /**
@@ -81,59 +133,26 @@ class FilterConfigurationHandler extends BaseFilterConfigurationHandler
         $sortConfig = $this->applySortForm();
         $column = $sortConfig->getColumn();
 
-        if ($column) {
-            $fullColumnReference = $column;
-            if (false === strpos($column, '.')) {
-                $fullColumnReference = $this->alias . '.' . $column;
-            }
-            if ($this->family->hasAttribute($column)) {
-                $attribute = $this->family->getAttribute($column);
-                $uid = uniqid('join');
-                $fullColumnReference = $uid . '.' . $attribute->getType()->getDatabaseType();
-                $qb->leftJoin($this->alias . '.values', $uid, Join::WITH,
-                    "({$uid}.data = {$this->alias}.id AND ({$uid}.attributeCode = '{$attribute->getCode()}' OR {$uid}.id IS NULL))");
-            }
-            $direction = $sortConfig->getDirection() ? 'DESC' : 'ASC'; // null or false both default to ASC
-            $qb->addOrderBy($fullColumnReference, $direction);
+        if (!$column) {
+            return;
         }
-    }
 
-    /**
-     * @return FamilyInterface
-     */
-    public function getFamily()
-    {
-        return $this->family;
-    }
-
-    /**
-     * @param FamilyInterface $family
-     * @return FilterConfigurationHandler
-     */
-    public function setFamily($family)
-    {
-        $this->family = $family;
-        return $this;
-    }
-
-    /**
-     * EAV optimization: fetching all values at the same time
-     * @return array|\Traversable
-     */
-    public function getResults()
-    {
-        /** @var ArrayIterator $datas */
-        $datas = $this->getPager()->getCurrentPageResults();
-        /** @var EntityRepository $repo */
-        $repo = $this->doctrine->getRepository($this->family->getDataClass());
-        // No need to actually fetch the results, the already existing data will be hydrated automatically
-        $repo->createQueryBuilder('d')
-            ->addSelect('v')
-            ->leftJoin('d.values', 'v')
-            ->where('d.id IN (:datas)')
-            ->setParameter('datas', $datas->getArrayCopy())
-            ->getQuery()
-            ->getResult();
-        return $datas;
+        $fullColumnReference = $column;
+        if (false === strpos($column, '.')) {
+            $fullColumnReference = $this->alias.'.'.$column;
+        }
+        if ($this->family->hasAttribute($column)) {
+            $attribute = $this->family->getAttribute($column);
+            $uid = uniqid('join');
+            $fullColumnReference = $uid.'.'.$attribute->getType()->getDatabaseType();
+            $qb->leftJoin(
+                $this->alias.'.values',
+                $uid,
+                Join::WITH,
+                "({$uid}.data = {$this->alias}.id AND ({$uid}.attributeCode = '{$attribute->getCode()}' OR {$uid}.id IS NULL))"
+            );
+        }
+        $direction = $sortConfig->getDirection() ? 'DESC' : 'ASC'; // null or false both default to ASC
+        $qb->addOrderBy($fullColumnReference, $direction);
     }
 }

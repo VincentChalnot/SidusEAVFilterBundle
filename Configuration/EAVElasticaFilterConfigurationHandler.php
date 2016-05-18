@@ -5,9 +5,13 @@ namespace Sidus\EAVFilterBundle\Configuration;
 use Elastica\Query;
 use FOS\ElasticaBundle\Finder\TransformedFinder;
 use Sidus\EAVFilterBundle\Filter\ElasticaFilterInterface;
-use Symfony\Component\HttpFoundation\Request;
 
-class ElasticaFilterConfigurationHandler extends FilterConfigurationHandler
+/**
+ * Adds Elastica supports to the EAV model filtering
+ *
+ * @author Vincent Chalnot <vincent@sidus.fr>
+ */
+class EAVElasticaFilterConfigurationHandler extends EAVFilterConfigurationHandler
 {
     /** @var Query */
     protected $esQuery;
@@ -35,21 +39,6 @@ class ElasticaFilterConfigurationHandler extends FilterConfigurationHandler
     }
 
     /**
-     * @param null $selectedPage
-     * @throws \Exception
-     */
-    protected function handleForm($selectedPage = null)
-    {
-        if ($this->esQuery) {
-            $this->applyESSort($this->getESQuery());
-            $this->applyESFilters($this->getBoolQuery());
-            $this->applyESPager($this->getESQuery(), $selectedPage);
-        } else {
-            parent::handleForm($selectedPage);
-        }
-    }
-
-    /**
      * @return Query
      */
     public function getESQuery()
@@ -61,16 +50,18 @@ class ElasticaFilterConfigurationHandler extends FilterConfigurationHandler
             $familyQuery = new Query\Match('family', implode(' ', $this->family->getMatchingCodes()));
             $this->boolQuery->addMust($familyQuery);
         }
+
         return $this->esQuery;
     }
 
     /**
-     * @param $query
-     * @return ElasticaFilterConfigurationHandler
+     * @param Query $query
+     * @return EAVElasticaFilterConfigurationHandler
      */
     public function setESQuery($query)
     {
         $this->esQuery = $query;
+
         return $this;
     }
 
@@ -91,6 +82,21 @@ class ElasticaFilterConfigurationHandler extends FilterConfigurationHandler
     }
 
     /**
+     * @param int $selectedPage
+     * @throws \Exception
+     */
+    protected function handleForm($selectedPage = null)
+    {
+        if ($this->esQuery) {
+            $this->applyESSort($this->getESQuery());
+            $this->applyESFilters($this->getBoolQuery());
+            $this->applyESPager($this->getESQuery(), $selectedPage);
+        } else {
+            parent::handleForm($selectedPage);
+        }
+    }
+
+    /**
      * @param Query\BoolQuery $query
      * @throws \Exception
      */
@@ -100,7 +106,7 @@ class ElasticaFilterConfigurationHandler extends FilterConfigurationHandler
         $filterForm = $form->get(self::FILTERS_FORM_NAME);
         foreach ($this->getFilters() as $filter) {
             if (!$filter instanceof ElasticaFilterInterface) {
-                throw new \Exception('Unsupported filter type for elastic search'); // @todo refactor with better exception
+                throw new \LogicException('Unsupported filter type for elastic search');
             }
             $filter->handleESForm($filterForm->get($filter->getCode()), $query);
         }
@@ -120,20 +126,27 @@ class ElasticaFilterConfigurationHandler extends FilterConfigurationHandler
             $query->addSort([
                 $column => [
                     'order' => $direction,
-                ]
+                ],
             ]);
         }
     }
 
     /**
      * @param Query $query
-     * @param Request $request
-     * @throws \Exception
+     * @param int   $selectedPage
+     * @throws \Pagerfanta\Exception\LessThan1MaxPerPageException
+     * @throws \Pagerfanta\Exception\NotIntegerMaxPerPageException
+     * @throws \Pagerfanta\Exception\LessThan1CurrentPageException
+     * @throws \Pagerfanta\Exception\NotIntegerCurrentPageException
+     * @throws \Pagerfanta\Exception\OutOfRangeCurrentPageException
      */
-    protected function applyESPager(Query $query, Request $request)
+    protected function applyESPager(Query $query, $selectedPage)
     {
+        if ($selectedPage) {
+            $this->sortConfig->setPage($selectedPage);
+        }
         $this->pager = $this->getFinder()->findPaginated($query);
         $this->pager->setMaxPerPage($this->resultsPerPage);
-        $this->pager->setCurrentPage($request->get('page', 1));
+        $this->pager->setCurrentPage($this->sortConfig->getPage());
     }
 }
