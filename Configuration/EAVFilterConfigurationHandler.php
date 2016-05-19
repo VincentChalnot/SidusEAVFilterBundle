@@ -133,25 +133,21 @@ class EAVFilterConfigurationHandler extends FilterConfigurationHandler
         $sortConfig = $this->applySortForm();
         $column = $sortConfig->getColumn();
 
-        if (!$column) {
+        if (!$column || !$this->family->hasAttribute($column)) {
+            parent::applySort($qb);
+
             return;
         }
 
-        $fullColumnReference = $column;
-        if (false === strpos($column, '.')) {
-            $fullColumnReference = $this->alias.'.'.$column;
-        }
-        if ($this->family->hasAttribute($column)) {
-            $attribute = $this->family->getAttribute($column);
-            $uid = uniqid('join');
-            $fullColumnReference = $uid.'.'.$attribute->getType()->getDatabaseType();
-            $qb->leftJoin(
-                $this->alias.'.values',
-                $uid,
-                Join::WITH,
-                "({$uid}.data = {$this->alias}.id AND ({$uid}.attributeCode = '{$attribute->getCode()}' OR {$uid}.id IS NULL))"
-            );
-        }
+        $attribute = $this->family->getAttribute($column);
+        $uid = uniqid('join');
+        $fullColumnReference = $uid.'.'.$attribute->getType()->getDatabaseType();
+        $qb->leftJoin(
+            $this->alias.'.values',
+            $uid,
+            Join::WITH,
+            "({$uid}.data = {$this->alias}.id AND ({$uid}.attributeCode = '{$attribute->getCode()}' OR {$uid}.id IS NULL))"
+        );
         $direction = $sortConfig->getDirection() ? 'DESC' : 'ASC'; // null or false both default to ASC
         $qb->addOrderBy($fullColumnReference, $direction);
     }
