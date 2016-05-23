@@ -10,6 +10,9 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class DataValuesSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @return array
+     */
     public static function getSubscribedEvents()
     {
         return [
@@ -17,6 +20,10 @@ class DataValuesSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /**
+     * @param TransformEvent $event
+     * @throws \Elastica\Exception\InvalidException
+     */
     public function addCustomProperty(TransformEvent $event)
     {
         /** @var Document $document */
@@ -26,6 +33,9 @@ class DataValuesSubscriber implements EventSubscriberInterface
             return;
         }
         foreach ($data->getFamily()->getAttributes() as $attribute) {
+            if ($document->has($attribute->getCode())) {
+                continue;
+            }
             if ($attribute->isMultiple()) {
                 $values = $data->getValuesData($attribute);
                 if ($values instanceof ArrayCollection) {
