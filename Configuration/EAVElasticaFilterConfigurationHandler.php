@@ -5,6 +5,7 @@ namespace Sidus\EAVFilterBundle\Configuration;
 use Elastica\Query;
 use FOS\ElasticaBundle\Finder\TransformedFinder;
 use Sidus\EAVFilterBundle\Filter\ElasticaFilterInterface;
+use Sidus\FilterBundle\DTO\SortConfig;
 
 /**
  * Adds Elastica supports to the EAV model filtering
@@ -88,7 +89,7 @@ class EAVElasticaFilterConfigurationHandler extends EAVFilterConfigurationHandle
     protected function handleForm($selectedPage = null)
     {
         if ($this->esQuery) {
-            $this->applyESSort($this->getESQuery());
+            $this->applyESSort($this->getESQuery(), $this->applySortForm());
             $this->applyESFilters($this->getBoolQuery());
             $this->applyESPager($this->getESQuery(), $selectedPage);
         } else {
@@ -113,13 +114,11 @@ class EAVElasticaFilterConfigurationHandler extends EAVFilterConfigurationHandle
     }
 
     /**
-     * @param Query $query
-     * @throws \Exception
+     * @param Query      $query
+     * @param SortConfig $sortConfig
      */
-    protected function applyESSort(Query $query)
+    protected function applyESSort(Query $query, SortConfig $sortConfig)
     {
-        $sortConfig = $this->applySortForm();
-
         $column = $sortConfig->getColumn();
         if ($column) {
             $direction = $sortConfig->getDirection() ? 'desc' : 'asc'; // null or false both default to ASC

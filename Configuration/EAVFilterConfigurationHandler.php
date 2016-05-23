@@ -10,6 +10,7 @@ use Doctrine\ORM\QueryBuilder;
 use Sidus\EAVModelBundle\Configuration\FamilyConfigurationHandler;
 use Sidus\EAVModelBundle\Model\FamilyInterface;
 use Sidus\FilterBundle\Configuration\FilterConfigurationHandler;
+use Sidus\FilterBundle\DTO\SortConfig;
 use Sidus\FilterBundle\Filter\FilterFactory;
 use UnexpectedValueException;
 
@@ -126,15 +127,14 @@ class EAVFilterConfigurationHandler extends FilterConfigurationHandler
 
     /**
      * @param QueryBuilder $qb
-     * @throws \Exception
+     * @param SortConfig   $sortConfig
      */
-    protected function applySort(QueryBuilder $qb)
+    protected function applySort(QueryBuilder $qb, SortConfig $sortConfig)
     {
-        $sortConfig = $this->applySortForm();
         $column = $sortConfig->getColumn();
 
         if (!$column || !$this->family->hasAttribute($column)) {
-            parent::applySort($qb);
+            parent::applySort($qb, $sortConfig);
 
             return;
         }
