@@ -22,8 +22,8 @@ class Filter extends BaseFilter
 
     /**
      * @param FormInterface $form
-     * @param QueryBuilder $qb
-     * @param string $alias
+     * @param QueryBuilder  $qb
+     * @param string        $alias
      */
     public function handleForm(FormInterface $form, QueryBuilder $qb, $alias)
     {
@@ -37,13 +37,14 @@ class Filter extends BaseFilter
     public function getFormOptions(QueryBuilder $qb, $alias)
     {
         $this->buildAttributeJoins($qb, $alias);
+
         return parent::getFormOptions($qb, $alias);
     }
 
 
     /**
      * @param QueryBuilder $qb
-     * @param string $alias
+     * @param string       $alias
      */
     protected function buildAttributeJoins(QueryBuilder $qb, $alias)
     {
@@ -52,7 +53,12 @@ class Filter extends BaseFilter
             if ($this->joinExists($qb, $customAlias)) {
                 continue;
             }
-            $qb->leftJoin($alias . '.values', $customAlias, Join::WITH, "({$customAlias}.attributeCode = '{$attribute->getCode()}')");
+            $qb->leftJoin(
+                $alias.'.values',
+                $customAlias,
+                Join::WITH,
+                "({$customAlias}.attributeCode = '{$attribute->getCode()}')"
+            );
         }
     }
 
@@ -73,7 +79,7 @@ class Filter extends BaseFilter
                 $family = $this->options['family'];
                 if ($family->hasAttribute($attribute)) {
                     $customAlias = uniqid('join');
-                    $this->eavReferences[$attribute] = $customAlias . '.' . $family->getAttribute($attribute)->getType()->getDatabaseType();
+                    $this->eavReferences[$attribute] = $customAlias.'.'.$family->getAttribute($attribute)->getType()->getDatabaseType();
                     $this->attributeJoins[$customAlias] = $family->getAttribute($attribute);
                 }
             }
@@ -91,7 +97,7 @@ class Filter extends BaseFilter
         foreach ($this->getAttributes() as $attribute) {
             if (false === strpos($attribute, '.')) {
                 if (empty($this->eavReferences[$attribute])) {
-                    $references[] = $alias . '.' . $attribute;
+                    $references[] = $alias.'.'.$attribute;
                 } else {
                     $references[] = $this->eavReferences[$attribute];
                 }
@@ -99,12 +105,13 @@ class Filter extends BaseFilter
                 $references[] = $attribute;
             }
         }
+
         return $references;
     }
 
     /**
      * @param QueryBuilder $qb
-     * @param string $customAlias
+     * @param string       $customAlias
      * @return bool
      */
     protected function joinExists(QueryBuilder $qb, $customAlias)
@@ -117,6 +124,7 @@ class Filter extends BaseFilter
                 }
             }
         }
+
         return false;
     }
 }
