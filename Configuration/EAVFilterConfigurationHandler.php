@@ -106,7 +106,7 @@ class EAVFilterConfigurationHandler extends FilterConfigurationHandler
             ->addSelect('v')
             ->leftJoin('d.values', 'v')
             ->where('d.id IN (:datas)')
-            ->setParameter('datas', $datas->getArrayCopy())
+            ->setParameter('datas', is_array($datas) ? $datas : $datas->getArrayCopy())
             ->getQuery()
             ->getResult();
 
