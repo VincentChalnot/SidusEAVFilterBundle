@@ -20,6 +20,6 @@
   "require": {
     "sidus/eav-model-bundle": "dev-master",
     "sidus/filter-bundle": "dev-master",
-    "friendsofsymfony/elastica-bundle": "~3.2"
+    "friendsofsymfony/elastica-bundle": "*"
   }
 }
