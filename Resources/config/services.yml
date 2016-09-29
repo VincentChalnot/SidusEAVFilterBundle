@@ -6,5 +6,6 @@ parameters:
 services:
     sidus_eav_filter.elastica.data_value_subscriber:
         class: "%sidus_eav_filter.elastica.data_value_subscriber.class%"
+        arguments: ['@doctrine']
         tags:
             - { name: kernel.event_subscriber }

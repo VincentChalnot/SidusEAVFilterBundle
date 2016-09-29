@@ -39,20 +39,23 @@ class SidusEAVFilterExtension extends Extension
     }
 
     /**
-     * @param string $code
-     * @param array $configuration
+     * @param string           $code
+     * @param array            $configuration
      * @param ContainerBuilder $container
+     *
      * @throws BadMethodCallException
      */
     protected function addConfigurationServiceDefinition($code, array $configuration, ContainerBuilder $container)
     {
-        $definition = new Definition(new Parameter('sidus_eav_filter.configuration.class'), [
-            $code,
-            new Reference('doctrine'),
-            new Reference('sidus_filter.filter.factory'),
-            $configuration,
-            new Reference('sidus_eav_model.family_configuration.handler'),
-        ]);
-        $container->setDefinition('sidus_eav_filter.configuration.' . $code, $definition);
+        $definition = new Definition(
+            new Parameter('sidus_eav_filter.configuration.class'), [
+                $code,
+                new Reference('doctrine'),
+                new Reference('sidus_filter.filter.factory'),
+                $configuration,
+                new Reference('sidus_eav_model.family_configuration.handler'),
+            ]
+        );
+        $container->setDefinition('sidus_eav_filter.configuration.'.$code, $definition);
     }
 }

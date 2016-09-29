@@ -57,6 +57,7 @@ class EAVElasticaFilterConfigurationHandler extends EAVFilterConfigurationHandle
 
     /**
      * @param Query $query
+     *
      * @return EAVElasticaFilterConfigurationHandler
      */
     public function setESQuery($query)
@@ -84,6 +85,7 @@ class EAVElasticaFilterConfigurationHandler extends EAVFilterConfigurationHandle
 
     /**
      * @param int $selectedPage
+     *
      * @throws \Exception
      */
     protected function handleForm($selectedPage = null)
@@ -99,6 +101,7 @@ class EAVElasticaFilterConfigurationHandler extends EAVFilterConfigurationHandle
 
     /**
      * @param Query\BoolQuery $query
+     *
      * @throws \Exception
      */
     protected function applyESFilters(Query\BoolQuery $query)
@@ -122,17 +125,20 @@ class EAVElasticaFilterConfigurationHandler extends EAVFilterConfigurationHandle
         $column = $sortConfig->getColumn();
         if ($column) {
             $direction = $sortConfig->getDirection() ? 'desc' : 'asc'; // null or false both default to ASC
-            $query->addSort([
-                $column => [
-                    'order' => $direction,
-                ],
-            ]);
+            $query->addSort(
+                [
+                    $column => [
+                        'order' => $direction,
+                    ],
+                ]
+            );
         }
     }
 
     /**
      * @param Query $query
      * @param int   $selectedPage
+     *
      * @throws \Pagerfanta\Exception\LessThan1MaxPerPageException
      * @throws \Pagerfanta\Exception\NotIntegerMaxPerPageException
      * @throws \Pagerfanta\Exception\LessThan1CurrentPageException

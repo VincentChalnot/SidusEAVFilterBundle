@@ -9,8 +9,9 @@ use Symfony\Component\Form\FormInterface;
 class ElasticaFilter extends Filter implements ElasticaFilterInterface
 {
     /**
-     * @param FormInterface $form
+     * @param FormInterface   $form
      * @param Query\BoolQuery $query
+     *
      * @throws \Exception
      */
     public function handleESForm(FormInterface $form, Query\BoolQuery $query)

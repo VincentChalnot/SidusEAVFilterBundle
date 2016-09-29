@@ -6,9 +6,9 @@ parameters:
 
 services:
     sidus_eav_filter.filter.type.autocomplete_data:
-        class: %sidus_eav_filter.filter.type.autocomplete_data.class%
+        class: '%sidus_eav_filter.filter.type.autocomplete_data.class%'
         arguments:
             - autocomplete_data
-            - sidus_autocomplete_data_selector
+            - 'Sidus\EAVBootstrapBundle\Form\Type\AutocompleteDataSelectorType'
         tags:
             - { name: sidus.filter_type }

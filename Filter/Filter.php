@@ -27,7 +27,9 @@ class Filter extends BaseFilter
      */
     public function handleForm(FormInterface $form, QueryBuilder $qb, $alias)
     {
-        $this->buildAttributeJoins($qb, $alias);
+        if ($form->getData()) {
+            $this->buildAttributeJoins($qb, $alias);
+        }
         parent::handleForm($form, $qb, $alias);
     }
 
@@ -36,7 +38,7 @@ class Filter extends BaseFilter
      */
     public function getFormOptions(QueryBuilder $qb, $alias)
     {
-        $this->buildAttributeJoins($qb, $alias);
+//        $this->buildAttributeJoins($qb, $alias); // Was probably a mistake
 
         return parent::getFormOptions($qb, $alias);
     }
@@ -79,7 +81,8 @@ class Filter extends BaseFilter
                 $family = $this->options['family'];
                 if ($family->hasAttribute($attribute)) {
                     $customAlias = uniqid('join');
-                    $this->eavReferences[$attribute] = $customAlias.'.'.$family->getAttribute($attribute)->getType()->getDatabaseType();
+                    $this->eavReferences[$attribute] = $customAlias.'.'.$family->getAttribute($attribute)->getType(
+                        )->getDatabaseType();
                     $this->attributeJoins[$customAlias] = $family->getAttribute($attribute);
                 }
             }
@@ -89,6 +92,7 @@ class Filter extends BaseFilter
 
     /**
      * @param string $alias
+     *
      * @return array
      */
     public function getFullAttributeReferences($alias)
@@ -112,6 +116,7 @@ class Filter extends BaseFilter
     /**
      * @param QueryBuilder $qb
      * @param string       $customAlias
+     *
      * @return bool
      */
     protected function joinExists(QueryBuilder $qb, $customAlias)

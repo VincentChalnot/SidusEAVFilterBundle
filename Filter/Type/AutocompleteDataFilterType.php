@@ -16,11 +16,14 @@ class AutocompleteDataFilterType extends ChoiceFilterType
     public function getFormOptions(FilterInterface $filter, QueryBuilder $qb, $alias)
     {
         if (count($filter->getAttributes()) > 1) {
-            throw new \UnexpectedValueException("Autocomplete filters does not support multiple attributes ({$filter->getCode()})");
+            throw new \UnexpectedValueException(
+                "Autocomplete filters does not support multiple attributes ({$filter->getCode()})"
+            );
         }
         /** @var FamilyInterface $currentFamily */
         $currentFamily = $filter->getOptions()['family'];
         $attribute = $currentFamily->getAttribute(current($filter->getAttributes()));
+
         return [
             'family' => $attribute->getFormOptions()['family'],
         ];

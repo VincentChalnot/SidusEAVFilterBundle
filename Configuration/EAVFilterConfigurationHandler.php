@@ -33,6 +33,7 @@ class EAVFilterConfigurationHandler extends FilterConfigurationHandler
      * @param FilterFactory              $filterFactory
      * @param array                      $configuration
      * @param FamilyConfigurationHandler $familyConfigurationHandler
+     *
      * @throws UnexpectedValueException
      */
     public function __construct(
@@ -53,6 +54,7 @@ class EAVFilterConfigurationHandler extends FilterConfigurationHandler
 
     /**
      * @param string $alias
+     *
      * @return QueryBuilder
      */
     public function getQueryBuilder($alias = 'e')
@@ -81,6 +83,7 @@ class EAVFilterConfigurationHandler extends FilterConfigurationHandler
 
     /**
      * @param FamilyInterface $family
+     *
      * @return EAVFilterConfigurationHandler
      */
     public function setFamily($family)
@@ -115,6 +118,7 @@ class EAVFilterConfigurationHandler extends FilterConfigurationHandler
 
     /**
      * @param array $configuration
+     *
      * @throws UnexpectedValueException
      */
     protected function parseConfiguration(array $configuration)
