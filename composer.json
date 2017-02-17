@@ -28,8 +28,8 @@
         }
     },
     "require": {
-        "sidus/eav-model-bundle": "dev-master",
-        "sidus/filter-bundle": "dev-master",
+        "sidus/eav-model-bundle": "dev-v1.2.x-dev",
+        "sidus/filter-bundle": "dev-v1.2.x-dev",
         "friendsofsymfony/elastica-bundle": "*"
     }
 }
