@@ -1,0 +1,8 @@
+services:
+    sidus_eav_filter.filter.type.autocomplete_data:
+        class: Sidus\EAVFilterBundle\Filter\Type\AutocompleteDataFilterType
+        arguments:
+            - autocomplete_data
+            - Sidus\EAVBootstrapBundle\Form\Type\AutocompleteDataSelectorType
+        tags:
+            - { name: sidus.filter_type }

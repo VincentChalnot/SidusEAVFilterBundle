@@ -33,8 +33,8 @@ class SidusEAVFilterExtension extends Extension
             $this->addConfigurationServiceDefinition($code, $configuration, $container);
         }
 
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.yml');
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/services'));
+        $loader->load('configuration.yml');
         $loader->load('filter_types.yml');
     }
 
@@ -48,7 +48,8 @@ class SidusEAVFilterExtension extends Extension
     protected function addConfigurationServiceDefinition($code, array $configuration, ContainerBuilder $container)
     {
         $definition = new Definition(
-            new Parameter('sidus_eav_filter.configuration.class'), [
+            new Parameter('sidus_eav_filter.configuration.class'),
+            [
                 $code,
                 new Reference('doctrine'),
                 new Reference('sidus_filter.filter.factory'),

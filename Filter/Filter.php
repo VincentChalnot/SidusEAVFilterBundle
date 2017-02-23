@@ -9,6 +9,9 @@ use Sidus\EAVModelBundle\Model\FamilyInterface;
 use Sidus\FilterBundle\Filter\Filter as BaseFilter;
 use Symfony\Component\Form\FormInterface;
 
+/**
+ * Overrides base filter class to handles the specific needs of the EAV model
+ */
 class Filter extends BaseFilter
 {
     /** @var AttributeInterface[] */
@@ -34,13 +37,36 @@ class Filter extends BaseFilter
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getFormOptions(QueryBuilder $qb, $alias)
     {
-//        $this->buildAttributeJoins($qb, $alias); // Was probably a mistake
+        $this->buildAttributeJoins($qb, $alias);
 
         return parent::getFormOptions($qb, $alias);
+    }
+
+    /**
+     * @param string $alias
+     *
+     * @return array
+     */
+    public function getFullAttributeReferences($alias)
+    {
+        $references = [];
+        foreach ($this->getAttributes() as $attribute) {
+            if (false === strpos($attribute, '.')) {
+                if (empty($this->eavReferences[$attribute])) {
+                    $references[] = $alias.'.'.$attribute;
+                } else {
+                    $references[] = $this->eavReferences[$attribute];
+                }
+            } else {
+                $references[] = $attribute;
+            }
+        }
+
+        return $references;
     }
 
 
@@ -81,36 +107,13 @@ class Filter extends BaseFilter
                 $family = $this->options['family'];
                 if ($family->hasAttribute($attribute)) {
                     $customAlias = uniqid('join');
-                    $this->eavReferences[$attribute] = $customAlias.'.'.$family->getAttribute($attribute)->getType(
-                        )->getDatabaseType();
+                    $attributeType = $family->getAttribute($attribute)->getType();
+                    $this->eavReferences[$attribute] = $customAlias.'.'.$attributeType->getDatabaseType();
                     $this->attributeJoins[$customAlias] = $family->getAttribute($attribute);
                 }
             }
         }
         $this->isBuilt = true;
-    }
-
-    /**
-     * @param string $alias
-     *
-     * @return array
-     */
-    public function getFullAttributeReferences($alias)
-    {
-        $references = [];
-        foreach ($this->getAttributes() as $attribute) {
-            if (false === strpos($attribute, '.')) {
-                if (empty($this->eavReferences[$attribute])) {
-                    $references[] = $alias.'.'.$attribute;
-                } else {
-                    $references[] = $this->eavReferences[$attribute];
-                }
-            } else {
-                $references[] = $attribute;
-            }
-        }
-
-        return $references;
     }
 
     /**
@@ -121,8 +124,10 @@ class Filter extends BaseFilter
      */
     protected function joinExists(QueryBuilder $qb, $customAlias)
     {
-        /* @var $join Join */
-        foreach ($qb->getDQLPart('join') as $joins) {
+        /** @var array $joinPart */
+        $joinPart = $qb->getDQLPart('join');
+        /* @var $joins Join[] */
+        foreach ($joinPart as $joins) {
             foreach ($joins as $join) {
                 if ($join->getAlias() === $customAlias) {
                     return true;

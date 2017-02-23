@@ -1,10 +1,8 @@
 {
     "name": "sidus/eav-filter-bundle",
-    "description": "Extension for sidus/eav-model-bundle and sidus/filter-bundle to handle the EAV model with a fallback to elastic search",
+    "description": "Extension for sidus/eav-model-bundle and sidus/filter-bundle to handle the EAV model",
     "keywords": [
         "eav",
-        "elastica",
-        "elasticsearch",
         "filter",
         "doctrine",
         "sort",
@@ -29,7 +27,6 @@
     },
     "require": {
         "sidus/eav-model-bundle": "dev-v1.2.x-dev",
-        "sidus/filter-bundle": "dev-v1.2.x-dev",
-        "friendsofsymfony/elastica-bundle": "*"
+        "sidus/filter-bundle": "dev-v1.2.x-dev"
     }
 }
