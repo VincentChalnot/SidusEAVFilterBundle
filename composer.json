@@ -19,10 +19,9 @@
             "role": "Developer"
         }
     ],
-    "target-dir": "Sidus/EAVFilterBundle",
     "autoload": {
-        "psr-0": {
-            "Sidus\\EAVFilterBundle": ""
+        "psr-4": {
+            "Sidus\\EAVFilterBundle\\": ""
         }
     },
     "require": {
