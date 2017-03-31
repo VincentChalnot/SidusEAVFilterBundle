@@ -57,6 +57,7 @@ class SidusEAVFilterExtension extends Extension
                 new Reference('sidus_eav_model.family_configuration.handler'),
             ]
         );
+        $definition->setPublic(false);
         $container->setDefinition('sidus_eav_filter.configuration.'.$code, $definition);
     }
 }
