@@ -7,7 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
-use Sidus\EAVModelBundle\Configuration\FamilyConfigurationHandler;
+use Sidus\EAVModelBundle\Registry\FamilyRegistry;
 use Sidus\EAVModelBundle\Model\FamilyInterface;
 use Sidus\FilterBundle\Configuration\FilterConfigurationHandler;
 use Sidus\FilterBundle\DTO\SortConfig;
@@ -32,7 +32,7 @@ class EAVFilterConfigurationHandler extends FilterConfigurationHandler
      * @param Registry                   $doctrine
      * @param FilterFactory              $filterFactory
      * @param array                      $configuration
-     * @param FamilyConfigurationHandler $familyConfigurationHandler
+     * @param FamilyRegistry $familyRegistry
      *
      * @throws UnexpectedValueException
      */
@@ -41,12 +41,12 @@ class EAVFilterConfigurationHandler extends FilterConfigurationHandler
         Registry $doctrine,
         FilterFactory $filterFactory,
         array $configuration,
-        FamilyConfigurationHandler $familyConfigurationHandler
+        FamilyRegistry $familyRegistry
     ) {
-        if (!$familyConfigurationHandler->hasFamily($configuration['family'])) {
+        if (!$familyRegistry->hasFamily($configuration['family'])) {
             throw new UnexpectedValueException("Unknown family '{$configuration['family']}'");
         }
-        $this->family = $familyConfigurationHandler->getFamily($configuration['family']);
+        $this->family = $familyRegistry->getFamily($configuration['family']);
         unset($configuration['family']);
         $configuration['entity'] = $this->family->getDataClass();
         parent::__construct($code, $doctrine, $filterFactory, $configuration);
