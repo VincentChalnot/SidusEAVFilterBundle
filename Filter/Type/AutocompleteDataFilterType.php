@@ -28,7 +28,7 @@ class AutocompleteDataFilterType extends ChoiceFilterType
         $attribute = $currentFamily->getAttribute(current($filter->getAttributes()));
 
         return [
-            'family' => $attribute->getFormOptions()['family'],
+            'allowed_families' => $attribute->getOption('allowed_families'),
         ];
     }
 }
