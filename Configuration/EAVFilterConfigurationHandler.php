@@ -3,10 +3,8 @@
 namespace Sidus\EAVFilterBundle\Configuration;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
-use Sidus\EAVModelBundle\Entity\DataRepository;
 use Sidus\EAVModelBundle\Registry\FamilyRegistry;
 use Sidus\EAVModelBundle\Model\FamilyInterface;
 use Sidus\FilterBundle\Configuration\FilterConfigurationHandler;
@@ -18,6 +16,8 @@ use UnexpectedValueException;
  * Handles filtering on EAV model
  *
  * @author Vincent Chalnot <vincent@sidus.fr>
+ *
+ * @property \Sidus\EAVModelBundle\Entity\DataRepository $repository
  */
 class EAVFilterConfigurationHandler extends FilterConfigurationHandler
 {
@@ -73,25 +73,26 @@ class EAVFilterConfigurationHandler extends FilterConfigurationHandler
     }
 
     /**
-     * EAV optimization: fetching all values at the same time
+     * @param string $alias
      *
-     * @return array|\Traversable
-     * @throws \Pagerfanta\Exception\InvalidArgumentException
+     * @return QueryBuilder
      */
-    public function getResults()
+    public function getQueryBuilder($alias = 'e')
     {
-        /** @var \ArrayIterator $datas */
-        $datas = $this->getPager()->getCurrentPageResults();
-        /** @var DataRepository $repo */
-        $repo = $this->doctrine->getRepository($this->family->getDataClass());
-        // No need to actually fetch the results, the already existing data will be hydrated automatically
-        $repo->createOptimizedQueryBuilder('d')
-            ->where('d.id IN (:datas)')
-            ->setParameter('datas', is_array($datas) ? $datas : $datas->getArrayCopy())
-            ->getQuery()
-            ->getResult();
+        if (!$this->queryBuilder) {
+            $this->alias = $alias;
+            if ($this->family) {
+                $this->queryBuilder = $this->repository->createOptimizedQueryBuilder($alias);
+                $familyParam = uniqid('family', false);
+                $this->queryBuilder
+                    ->andWhere("{$alias}.family = :{$familyParam}")
+                    ->setParameter($familyParam, $this->family->getCode());
+            } else {
+                $this->queryBuilder = $this->repository->createQueryBuilder($alias);
+            }
+        }
 
-        return $datas;
+        return $this->queryBuilder;
     }
 
     /**
