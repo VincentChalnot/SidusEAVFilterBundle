@@ -2,11 +2,11 @@
 
 namespace Sidus\EAVFilterBundle\Configuration;
 
-use ArrayIterator;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
+use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
+use Sidus\EAVModelBundle\Entity\DataRepository;
 use Sidus\EAVModelBundle\Registry\FamilyRegistry;
 use Sidus\EAVModelBundle\Model\FamilyInterface;
 use Sidus\FilterBundle\Configuration\FilterConfigurationHandler;
@@ -53,27 +53,6 @@ class EAVFilterConfigurationHandler extends FilterConfigurationHandler
     }
 
     /**
-     * @param string $alias
-     *
-     * @return QueryBuilder
-     */
-    public function getQueryBuilder($alias = 'e')
-    {
-        if (!$this->queryBuilder) {
-            $this->alias = $alias;
-            $this->queryBuilder = $this->repository->createQueryBuilder($alias);
-            $this->queryBuilder
-                // Was supposed to be more performant but is in fact 500% slower... disabling it for the moment
-//                ->addSelect('value')
-//                ->leftJoin($alias . '.values', 'value') // Manual join on values
-                ->andWhere("{$alias}.family IN (:families)")
-                ->setParameter('families', $this->family->getMatchingCodes());
-        }
-
-        return $this->queryBuilder;
-    }
-
-    /**
      * @return FamilyInterface
      */
     public function getFamily()
@@ -97,17 +76,16 @@ class EAVFilterConfigurationHandler extends FilterConfigurationHandler
      * EAV optimization: fetching all values at the same time
      *
      * @return array|\Traversable
+     * @throws \Pagerfanta\Exception\InvalidArgumentException
      */
     public function getResults()
     {
-        /** @var ArrayIterator $datas */
+        /** @var \ArrayIterator $datas */
         $datas = $this->getPager()->getCurrentPageResults();
-        /** @var EntityRepository $repo */
+        /** @var DataRepository $repo */
         $repo = $this->doctrine->getRepository($this->family->getDataClass());
         // No need to actually fetch the results, the already existing data will be hydrated automatically
-        $repo->createQueryBuilder('d')
-            ->addSelect('v')
-            ->leftJoin('d.values', 'v')
+        $repo->createOptimizedQueryBuilder('d')
             ->where('d.id IN (:datas)')
             ->setParameter('datas', is_array($datas) ? $datas : $datas->getArrayCopy())
             ->getQuery()
@@ -132,6 +110,8 @@ class EAVFilterConfigurationHandler extends FilterConfigurationHandler
     /**
      * @param QueryBuilder $qb
      * @param SortConfig   $sortConfig
+     *
+     * @throws \Sidus\EAVModelBundle\Exception\MissingAttributeException
      */
     protected function applySort(QueryBuilder $qb, SortConfig $sortConfig)
     {
@@ -144,15 +124,7 @@ class EAVFilterConfigurationHandler extends FilterConfigurationHandler
         }
 
         $attribute = $this->family->getAttribute($column);
-        $uid = uniqid('join');
-        $fullColumnReference = $uid.'.'.$attribute->getType()->getDatabaseType();
-        $qb->leftJoin(
-            $this->alias.'.values',
-            $uid,
-            Join::WITH,
-            "({$uid}.data = {$this->alias}.id AND ({$uid}.attributeCode = '{$attribute->getCode()}' OR {$uid}.id IS NULL))"
-        );
-        $direction = $sortConfig->getDirection() ? 'DESC' : 'ASC'; // null or false both default to ASC
-        $qb->addOrderBy($fullColumnReference, $direction);
+        $eavQb = new EAVQueryBuilder($qb, $this->alias);
+        $eavQb->addOrderBy($eavQb->attribute($attribute), $sortConfig->getDirection() ? 'DESC' : 'ASC');
     }
 }

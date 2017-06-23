@@ -6,3 +6,27 @@ services:
             - Sidus\EAVBootstrapBundle\Form\Type\AutocompleteDataSelectorType
         tags:
             - { name: sidus.filter_type }
+
+    sidus_filter.filter.type.date_range:
+        class: Sidus\EAVFilterBundle\Filter\Type\DateRangeFilterType
+        arguments:
+            - date_range
+            - 'Sidus\FilterBundle\Form\Type\DateRangeType'
+        tags:
+            - { name: sidus.filter_type }
+
+    sidus_filter.filter.type.text:
+        class: Sidus\EAVFilterBundle\Filter\Type\TextFilterType
+        arguments:
+            - text
+            - 'Symfony\Component\Form\Extension\Core\Type\TextType'
+        tags:
+            - { name: sidus.filter_type }
+
+    sidus_filter.filter.type.choice:
+        class: Sidus\EAVFilterBundle\Filter\Type\ChoiceFilterType
+        arguments:
+            - choice
+            - 'Symfony\Component\Form\Extension\Core\Type\ChoiceType'
+        tags:
+            - { name: sidus.filter_type }
