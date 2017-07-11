@@ -5,7 +5,6 @@ namespace Sidus\EAVFilterBundle\Filter\Type;
 use Doctrine\ORM\QueryBuilder;
 use Sidus\EAVModelBundle\Model\FamilyInterface;
 use Sidus\FilterBundle\Filter\FilterInterface;
-use Sidus\FilterBundle\Filter\Type\ChoiceFilterType;
 
 /**
  * Autocomplete filter for data
