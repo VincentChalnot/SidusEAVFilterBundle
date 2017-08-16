@@ -1,0 +1,5 @@
+services:
+    sidus_eav_filter.helper.eav_filter:
+        class: Sidus\EAVFilterBundle\Filter\EAVFilterHelper
+        arguments:
+            - '@sidus_eav_model.family.registry'

@@ -2,7 +2,6 @@
 
 namespace Sidus\EAVFilterBundle\Filter;
 
-use Sidus\EAVModelBundle\Model\AttributeInterface;
 use Sidus\EAVModelBundle\Model\FamilyInterface;
 use Sidus\FilterBundle\Filter\Filter as BaseFilter;
 
@@ -12,16 +11,33 @@ use Sidus\FilterBundle\Filter\Filter as BaseFilter;
 class EAVFilter extends BaseFilter
 {
     /**
+     * @throws \UnexpectedValueException
+     *
+     * @return FamilyInterface
+     */
+    public function getFamily()
+    {
+        $family = $this->getOptions()['family'] ?? null;
+
+        if (!$family instanceof FamilyInterface) {
+            throw new \UnexpectedValueException('No family provided');
+        }
+
+        return $family;
+    }
+
+    /**
      * @param string $alias
+     *
+     * @throws \UnexpectedValueException
      *
      * @return array
      */
     public function getFullAttributeReferences($alias)
     {
-        $family = $this->getOptions()['family'] ?? null;
         $references = [];
         foreach ($this->getAttributes() as $attribute) {
-            if ($family instanceof FamilyInterface && $family->hasAttribute($attribute)) {
+            if ($this->isEAVAttribute($attribute)) {
                 continue;
             }
             if (false === strpos($attribute, '.')) {
@@ -35,24 +51,22 @@ class EAVFilter extends BaseFilter
     }
 
     /**
-     * @throws \Sidus\EAVModelBundle\Exception\MissingAttributeException
+     * @param string $attributePath
      *
-     * @return AttributeInterface[]
+     * @throws \UnexpectedValueException
+     *
+     * @return bool
      */
-    public function getEAVAttributes()
+    protected function isEAVAttribute($attributePath)
     {
-        $family = $this->getOptions()['family'] ?? null;
-        if (!$family instanceof FamilyInterface) {
-            return [];
-        }
+        $family = $this->getFamily();
 
-        $attributes = [];
-        foreach ($this->getAttributes() as $attributeCode) {
+        foreach (explode('.', $attributePath) as $attributeCode) {
             if ($family->hasAttribute($attributeCode)) {
-                $attributes[] = $family->getAttribute($attributeCode);
+                return true;
             }
         }
 
-        return $attributes;
+        return false;
     }
 }

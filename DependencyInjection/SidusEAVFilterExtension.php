@@ -36,6 +36,7 @@ class SidusEAVFilterExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config/services'));
         $loader->load('configuration.yml');
         $loader->load('filter_types.yml');
+        $loader->load('helper.yml');
     }
 
     /**

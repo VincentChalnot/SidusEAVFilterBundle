@@ -3,6 +3,7 @@
 namespace Sidus\EAVFilterBundle\Filter\Type;
 
 use Doctrine\ORM\QueryBuilder;
+use Sidus\EAVFilterBundle\Filter\EAVFilter;
 use Sidus\EAVModelBundle\Model\FamilyInterface;
 use Sidus\FilterBundle\Filter\FilterInterface;
 
@@ -17,17 +18,19 @@ class AutocompleteDataFilterType extends ChoiceFilterType
      */
     public function getFormOptions(FilterInterface $filter, QueryBuilder $qb, $alias)
     {
-        if (count($filter->getAttributes()) > 1) {
+        if (!$filter instanceof EAVFilter) {
+            return [];
+        }
+
+        $eavAttributes = $this->eavFilterHelper->getEAVAttributes($filter);
+        if (count($eavAttributes) > 1) {
             throw new \UnexpectedValueException(
                 "Autocomplete filters does not support multiple attributes ({$filter->getCode()})"
             );
         }
-        /** @var FamilyInterface $currentFamily */
-        $currentFamily = $filter->getOptions()['family'];
-        $attribute = $currentFamily->getAttribute(current($filter->getAttributes()));
 
         return [
-            'attribute' => $attribute,
+            'attribute' => reset($eavAttributes),
         ];
     }
 }

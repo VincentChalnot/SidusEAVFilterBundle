@@ -4,6 +4,7 @@ namespace Sidus\EAVFilterBundle\Filter\Type;
 
 use Doctrine\ORM\QueryBuilder;
 use Sidus\EAVFilterBundle\Filter\EAVFilter;
+use Sidus\EAVFilterBundle\Filter\EAVFilterHelper;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
 use Sidus\FilterBundle\Filter\FilterInterface;
 use Sidus\FilterBundle\Filter\Type\DateRangeFilterType as BaseDateRangeFilterType;
@@ -15,6 +16,17 @@ use Symfony\Component\Form\FormInterface;
  */
 class DateRangeFilterType extends BaseDateRangeFilterType
 {
+    /** @var EAVFilterHelper */
+    protected $eavFilterHelper;
+
+    /**
+     * @param EAVFilterHelper $eavFilterHelper
+     */
+    public function setEAVFilterHelper($eavFilterHelper)
+    {
+        $this->eavFilterHelper = $eavFilterHelper;
+    }
+
     /**
      * We don't handle default values for dates because it's complicated and it doesn't make much sense
      *
@@ -36,20 +48,21 @@ class DateRangeFilterType extends BaseDateRangeFilterType
             return;
         }
 
+        $family = $filter->getFamily();
         $eavQb = new EAVQueryBuilder($qb, $alias);
         $dqlHandlers = [];
-        foreach ($filter->getEAVAttributes() as $attribute) {
+        foreach ($filter->getAttributes() as $attributePath) {
             $attributeDqlHandlers = [];
             $attributeQb = null;
             if (!empty($data[DateRangeType::START_NAME])) {
-                $attributeQb = $eavQb->attribute($attribute);
+                $attributeQb = $this->eavFilterHelper->getEAVAttributeQueryBuilder($eavQb, $family, $attributePath);
                 $attributeDqlHandlers[] = $attributeQb->gte($data[DateRangeType::START_NAME]);
             }
             if (!empty($data[DateRangeType::END_NAME])) {
                 if ($attributeQb) {
                     $attributeQb = clone $attributeQb;
                 } else {
-                    $attributeQb = $eavQb->attribute($attribute);
+                    $attributeQb = $this->eavFilterHelper->getEAVAttributeQueryBuilder($eavQb, $family, $attributePath);
                 }
                 $attributeDqlHandlers[] = $attributeQb->lte($data[DateRangeType::END_NAME]);
             }
