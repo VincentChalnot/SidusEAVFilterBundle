@@ -13,17 +13,11 @@ class EAVFilter extends BaseFilter
     /**
      * @throws \UnexpectedValueException
      *
-     * @return FamilyInterface
+     * @return FamilyInterface|null
      */
     public function getFamily()
     {
-        $family = $this->getOptions()['family'] ?? null;
-
-        if (!$family instanceof FamilyInterface) {
-            throw new \UnexpectedValueException('No family provided');
-        }
-
-        return $family;
+        return $this->getOptions()['family'] ?? null;
     }
 
     /**
@@ -60,6 +54,9 @@ class EAVFilter extends BaseFilter
     protected function isEAVAttribute($attributePath)
     {
         $family = $this->getFamily();
+        if (!$family) {
+            return false;
+        }
 
         foreach (explode('.', $attributePath) as $attributeCode) {
             if ($family->hasAttribute($attributeCode)) {

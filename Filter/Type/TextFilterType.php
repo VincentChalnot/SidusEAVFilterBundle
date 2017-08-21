@@ -46,6 +46,9 @@ class TextFilterType extends BaseTextFilterType
         }
 
         $family = $filter->getFamily();
+        if (!$family) {
+            return;
+        }
         $eavQb = new EAVQueryBuilder($qb, $alias);
         $dqlHandlers = [];
         foreach ($filter->getAttributes() as $attributePath) {

@@ -33,6 +33,9 @@ class EAVFilterHelper
     public function getEAVAttributes(EAVFilter $eavFilter)
     {
         $family = $eavFilter->getFamily();
+        if (!$family) {
+            return [];
+        }
 
         $attributes = [];
         foreach ($eavFilter->getAttributes() as $attributePath) {

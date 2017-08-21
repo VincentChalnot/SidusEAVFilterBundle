@@ -49,6 +49,9 @@ class ChoiceFilterType extends BaseChoiceFilterType
         }
 
         $family = $filter->getFamily();
+        if (!$family) {
+            return;
+        }
         $eavQb = new EAVQueryBuilder($qb, $alias);
         $dqlHandlers = [];
         foreach ($filter->getAttributes() as $attributePath) {
