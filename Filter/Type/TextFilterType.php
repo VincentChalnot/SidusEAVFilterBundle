@@ -4,6 +4,7 @@ namespace Sidus\EAVFilterBundle\Filter\Type;
 
 use Doctrine\ORM\QueryBuilder;
 use Sidus\EAVFilterBundle\Filter\EAVFilter;
+use Sidus\EAVFilterBundle\Filter\EAVFilterHelper;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
 use Sidus\FilterBundle\Filter\FilterInterface;
 use Sidus\FilterBundle\Filter\Type\TextFilterType as BaseTextFilterType;
@@ -14,6 +15,17 @@ use Symfony\Component\Form\FormInterface;
  */
 class TextFilterType extends BaseTextFilterType
 {
+    /** @var EAVFilterHelper */
+    protected $eavFilterHelper;
+
+    /**
+     * @param EAVFilterHelper $eavFilterHelper
+     */
+    public function setEAVFilterHelper($eavFilterHelper)
+    {
+        $this->eavFilterHelper = $eavFilterHelper;
+    }
+
     /**
      * @param FilterInterface $filter
      * @param FormInterface   $form
@@ -33,17 +45,15 @@ class TextFilterType extends BaseTextFilterType
             return;
         }
 
+        $family = $filter->getFamily();
+        if (!$family) {
+            return;
+        }
         $eavQb = new EAVQueryBuilder($qb, $alias);
         $dqlHandlers = [];
-        foreach ($filter->getEAVAttributes() as $attribute) {
-            $attributeQb = $eavQb->attribute($attribute);
+        foreach ($filter->getAttributes() as $attributePath) {
+            $attributeQb = $this->eavFilterHelper->getEAVAttributeQueryBuilder($eavQb, $family, $attributePath);
             $dqlHandlers[] = $attributeQb->like('%'.trim($data, '%').'%');
-
-            // Specific case for default values
-            if ($attribute->getDefault() === $data) {
-                $attributeQb = clone $attributeQb;
-                $dqlHandlers[] = $attributeQb->isNull();
-            }
         }
 
         if (0 < count($dqlHandlers)) {
