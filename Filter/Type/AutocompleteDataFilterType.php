@@ -4,8 +4,7 @@ namespace Sidus\EAVFilterBundle\Filter\Type;
 
 use Doctrine\ORM\QueryBuilder;
 use Sidus\EAVFilterBundle\Filter\EAVFilter;
-use Sidus\EAVModelBundle\Model\FamilyInterface;
-use Sidus\FilterBundle\Filter\FilterInterface;
+use Sidus\FilterBundle\Filter\Doctrine\DoctrineFilterInterface;
 
 /**
  * Autocomplete filter for data
@@ -16,7 +15,7 @@ class AutocompleteDataFilterType extends ChoiceFilterType
      * {@inheritdoc}
      * @throws \UnexpectedValueException
      */
-    public function getFormOptions(FilterInterface $filter, QueryBuilder $qb, $alias)
+    public function getDoctrineFormOptions(DoctrineFilterInterface $filter, QueryBuilder $qb, $alias)
     {
         if (!$filter instanceof EAVFilter) {
             return [];

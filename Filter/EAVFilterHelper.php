@@ -44,7 +44,7 @@ class EAVFilterHelper
              * @var AttributeInterface $attribute
              */
             foreach (explode('.', $attributePath) as $attributeCode) {
-                if (isset($attribute)) { // This means we're in a nested attribute
+                if (null !== $attribute) { // This means we're in a nested attribute
                     $families = $attribute->getOption('allowed_families', []);
                     if (1 !== count($families)) {
                         throw new \UnexpectedValueException(
@@ -83,12 +83,13 @@ class EAVFilterHelper
         $attributePath
     ) {
         $attributeQueryBuilder = null;
+        $attribute = null;
         /**
-         * @var AttributeInterface $attribute
+         * @var AttributeInterface             $attribute
          * @var AttributeQueryBuilderInterface $attributeQueryBuilder
          */
         foreach (explode('.', $attributePath) as $attributeCode) {
-            if (isset($attribute)) { // This means we're in a nested attribute
+            if (null !== $attribute) { // This means we're in a nested attribute
                 $families = $attribute->getOption('allowed_families', []);
                 if (1 !== count($families)) {
                     throw new \UnexpectedValueException(

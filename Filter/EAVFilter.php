@@ -3,12 +3,12 @@
 namespace Sidus\EAVFilterBundle\Filter;
 
 use Sidus\EAVModelBundle\Model\FamilyInterface;
-use Sidus\FilterBundle\Filter\Filter as BaseFilter;
+use Sidus\FilterBundle\Filter\Doctrine\DoctrineFilter;
 
 /**
  * Overrides base filter class to handles the specific needs of the EAV model
  */
-class EAVFilter extends BaseFilter
+class EAVFilter extends DoctrineFilter
 {
     /**
      * @throws \UnexpectedValueException

@@ -29,7 +29,9 @@ class SidusEAVFilterExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         // Automatically declare a service for each attribute configured
-        foreach ($config['configurations'] as $code => $configuration) {
+        /** @var array $configurations */
+        $configurations = $config['configurations'];
+        foreach ($configurations as $code => $configuration) {
             $this->addConfigurationServiceDefinition($code, $configuration, $container);
         }
 

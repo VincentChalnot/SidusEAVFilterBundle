@@ -6,8 +6,8 @@ use Doctrine\ORM\QueryBuilder;
 use Sidus\EAVFilterBundle\Filter\EAVFilter;
 use Sidus\EAVFilterBundle\Filter\EAVFilterHelper;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
-use Sidus\FilterBundle\Filter\FilterInterface;
-use Sidus\FilterBundle\Filter\Type\DateRangeFilterType as BaseDateRangeFilterType;
+use Sidus\FilterBundle\Filter\Doctrine\DoctrineFilterInterface;
+use Sidus\FilterBundle\Filter\Type\Doctrine\DateRangeFilterType as BaseDateRangeFilterType;
 use Sidus\FilterBundle\Form\Type\DateRangeType;
 use Symfony\Component\Form\FormInterface;
 
@@ -30,21 +30,21 @@ class DateRangeFilterType extends BaseDateRangeFilterType
     /**
      * We don't handle default values for dates because it's complicated and it doesn't make much sense
      *
-     * @param FilterInterface $filter
-     * @param FormInterface   $form
-     * @param QueryBuilder    $qb
-     * @param string          $alias
+     * @param DoctrineFilterInterface $filter
+     * @param FormInterface           $form
+     * @param QueryBuilder            $qb
+     * @param string                  $alias
      *
      * @throws \LogicException
      * @throws \UnexpectedValueException
      * @throws \Sidus\EAVModelBundle\Exception\MissingAttributeException
      */
-    public function handleForm(FilterInterface $filter, FormInterface $form, QueryBuilder $qb, $alias)
+    public function handleForm(DoctrineFilterInterface $filter, FormInterface $form, QueryBuilder $qb, $alias)
     {
         parent::handleForm($filter, $form, $qb, $alias);
 
         $data = $form->getData();
-        if (!$form->isSubmitted() || null === $data || !$filter instanceof EAVFilter) {
+        if (null === $data || !$filter instanceof EAVFilter || !$form->isSubmitted()) {
             return;
         }
 

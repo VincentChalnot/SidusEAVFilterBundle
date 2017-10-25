@@ -7,9 +7,9 @@ use Doctrine\ORM\QueryBuilder;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
 use Sidus\EAVModelBundle\Registry\FamilyRegistry;
 use Sidus\EAVModelBundle\Model\FamilyInterface;
-use Sidus\FilterBundle\Configuration\FilterConfigurationHandler;
+use Sidus\FilterBundle\Configuration\DoctrineFilterConfigurationHandler;
 use Sidus\FilterBundle\DTO\SortConfig;
-use Sidus\FilterBundle\Filter\FilterFactory;
+use Sidus\FilterBundle\Filter\Doctrine\DoctrineFilterFactory;
 use UnexpectedValueException;
 
 /**
@@ -19,7 +19,7 @@ use UnexpectedValueException;
  *
  * @property \Sidus\EAVModelBundle\Entity\DataRepository $repository
  */
-class EAVFilterConfigurationHandler extends FilterConfigurationHandler
+class EAVFilterConfigurationHandler extends DoctrineFilterConfigurationHandler
 {
     /** @var FamilyInterface */
     protected $family;
@@ -28,18 +28,18 @@ class EAVFilterConfigurationHandler extends FilterConfigurationHandler
     protected $valueAlias;
 
     /**
-     * @param string                     $code
-     * @param Registry                   $doctrine
-     * @param FilterFactory              $filterFactory
-     * @param array                      $configuration
-     * @param FamilyRegistry $familyRegistry
+     * @param string                $code
+     * @param Registry              $doctrine
+     * @param DoctrineFilterFactory $filterFactory
+     * @param array                 $configuration
+     * @param FamilyRegistry        $familyRegistry
      *
      * @throws UnexpectedValueException
      */
     public function __construct(
         $code,
         Registry $doctrine,
-        FilterFactory $filterFactory,
+        DoctrineFilterFactory $filterFactory,
         array $configuration,
         FamilyRegistry $familyRegistry
     ) {
@@ -102,7 +102,9 @@ class EAVFilterConfigurationHandler extends FilterConfigurationHandler
      */
     protected function parseConfiguration(array $configuration)
     {
-        foreach ($configuration['fields'] as $code => $field) {
+        /** @var array $fields */
+        $fields = $configuration['fields'];
+        foreach ($fields as $code => $field) {
             $configuration['fields'][$code]['options']['family'] = $this->family;
         }
         parent::parseConfiguration($configuration);
