@@ -10,6 +10,7 @@ use Sidus\EAVModelBundle\Model\FamilyInterface;
 use Sidus\FilterBundle\Configuration\DoctrineFilterConfigurationHandler;
 use Sidus\FilterBundle\DTO\SortConfig;
 use Sidus\FilterBundle\Filter\Doctrine\DoctrineFilterFactory;
+use Sidus\FilterBundle\Filter\FilterFactory;
 use UnexpectedValueException;
 
 /**
@@ -28,19 +29,19 @@ class EAVFilterConfigurationHandler extends DoctrineFilterConfigurationHandler
     protected $valueAlias;
 
     /**
-     * @param string                $code
-     * @param Registry              $doctrine
-     * @param DoctrineFilterFactory $filterFactory
-     * @param array                 $configuration
-     * @param FamilyRegistry        $familyRegistry
+     * @param FilterFactory  $filterFactory
+     * @param string         $code
+     * @param array          $configuration
+     * @param Registry       $doctrine
+     * @param FamilyRegistry $familyRegistry
      *
      * @throws UnexpectedValueException
      */
     public function __construct(
+        FilterFactory $filterFactory,
         $code,
-        Registry $doctrine,
-        DoctrineFilterFactory $filterFactory,
         array $configuration,
+        Registry $doctrine,
         FamilyRegistry $familyRegistry
     ) {
         if (!$familyRegistry->hasFamily($configuration['family'])) {
@@ -49,7 +50,7 @@ class EAVFilterConfigurationHandler extends DoctrineFilterConfigurationHandler
         $this->family = $familyRegistry->getFamily($configuration['family']);
         unset($configuration['family']);
         $configuration['entity'] = $this->family->getDataClass();
-        parent::__construct($code, $doctrine, $filterFactory, $configuration);
+        parent::__construct($filterFactory, $code, $configuration, $doctrine);
     }
 
     /**
