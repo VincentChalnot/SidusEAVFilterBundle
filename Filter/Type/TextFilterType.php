@@ -3,56 +3,45 @@
 namespace Sidus\EAVFilterBundle\Filter\Type;
 
 use Doctrine\ORM\QueryBuilder;
+use Sidus\EAVFilterBundle\Configuration\EAVQueryHandlerInterface;
 use Sidus\EAVFilterBundle\Filter\EAVFilter;
 use Sidus\EAVFilterBundle\Filter\EAVFilterHelper;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
+use Sidus\FilterBundle\Exception\BadQueryHandlerException;
 use Sidus\FilterBundle\Filter\Doctrine\DoctrineFilterInterface;
+use Sidus\FilterBundle\Filter\FilterInterface;
 use Sidus\FilterBundle\Filter\Type\Doctrine\TextFilterType as BaseTextFilterType;
+use Sidus\FilterBundle\Query\Handler\QueryHandlerInterface;
 use Symfony\Component\Form\FormInterface;
 
 /**
  * Replaces the standard TextFilterType
  */
-class TextFilterType extends BaseTextFilterType
+class TextFilterType extends AbstractEAVFilterType
 {
-    /** @var EAVFilterHelper */
-    protected $eavFilterHelper;
-
     /**
-     * @param EAVFilterHelper $eavFilterHelper
-     */
-    public function setEAVFilterHelper($eavFilterHelper)
-    {
-        $this->eavFilterHelper = $eavFilterHelper;
-    }
-
-    /**
-     * @param DoctrineFilterInterface $filter
-     * @param FormInterface           $form
-     * @param QueryBuilder            $qb
-     * @param string                  $alias
+     * {@inheritdoc}
      *
      * @throws \LogicException
      * @throws \UnexpectedValueException
-     * @throws \Sidus\EAVModelBundle\Exception\MissingAttributeException
      */
-    public function handleForm(DoctrineFilterInterface $filter, FormInterface $form, QueryBuilder $qb, $alias)
+    public function handleForm(QueryHandlerInterface $queryHandler, FilterInterface $filter, FormInterface $form)
     {
-        parent::handleForm($filter, $form, $qb, $alias);
-
+        if (!$queryHandler instanceof EAVQueryHandlerInterface) {
+            throw new BadQueryHandlerException($queryHandler, EAVQueryHandlerInterface::class);
+        }
+        if (!$form->isSubmitted()) {
+            return;
+        }
         $data = $form->getData();
-        if (null === $data || !$filter instanceof EAVFilter || !$form->isSubmitted()) {
+        if (null === $data) {
             return;
         }
 
-        $family = $filter->getFamily();
-        if (!$family) {
-            return;
-        }
-        $eavQb = new EAVQueryBuilder($qb, $alias);
+        $eavQb = new EAVQueryBuilder($queryHandler->getQueryBuilder(), $queryHandler->getAlias());
         $dqlHandlers = [];
         foreach ($filter->getAttributes() as $attributePath) {
-            $attributeQb = $this->eavFilterHelper->getEAVAttributeQueryBuilder($eavQb, $family, $attributePath);
+            $attributeQb = $queryHandler->getEAVAttributeQueryBuilder($eavQb, $attributePath);
             $dqlHandlers[] = $attributeQb->like('%'.trim($data, '%').'%');
         }
 

@@ -2,60 +2,41 @@
 
 namespace Sidus\EAVFilterBundle\Filter\Type;
 
-use Doctrine\ORM\QueryBuilder;
-use Sidus\EAVFilterBundle\Filter\EAVFilter;
-use Sidus\EAVFilterBundle\Filter\EAVFilterHelper;
+use Sidus\EAVFilterBundle\Configuration\EAVQueryHandlerInterface;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
-use Sidus\FilterBundle\Filter\Doctrine\DoctrineFilterInterface;
-use Sidus\FilterBundle\Filter\Type\Doctrine\ChoiceFilterType as BaseChoiceFilterType;
+use Sidus\FilterBundle\Exception\BadQueryHandlerException;
+use Sidus\FilterBundle\Filter\FilterInterface;
+use Sidus\FilterBundle\Query\Handler\QueryHandlerInterface;
 use Symfony\Component\Form\FormInterface;
 
 /**
  * Replaces the standard ChoiceFilterType
  */
-class ChoiceFilterType extends BaseChoiceFilterType
+class ChoiceFilterType extends AbstractEAVFilterType
 {
-    /** @var EAVFilterHelper */
-    protected $eavFilterHelper;
-
     /**
-     * @param EAVFilterHelper $eavFilterHelper
-     */
-    public function setEAVFilterHelper($eavFilterHelper)
-    {
-        $this->eavFilterHelper = $eavFilterHelper;
-    }
-
-    /**
-     * @param DoctrineFilterInterface $filter
-     * @param FormInterface           $form
-     * @param QueryBuilder            $qb
-     * @param string                  $alias
+     * {@inheritdoc}
      *
      * @throws \LogicException
      * @throws \UnexpectedValueException
-     * @throws \Sidus\EAVModelBundle\Exception\MissingAttributeException
      */
-    public function handleForm(DoctrineFilterInterface $filter, FormInterface $form, QueryBuilder $qb, $alias)
+    public function handleForm(QueryHandlerInterface $queryHandler, FilterInterface $filter, FormInterface $form)
     {
-        parent::handleForm($filter, $form, $qb, $alias);
-
+        if (!$queryHandler instanceof EAVQueryHandlerInterface) {
+            throw new BadQueryHandlerException($queryHandler, EAVQueryHandlerInterface::class);
+        }
+        if (!$form->isSubmitted()) {
+            return;
+        }
         $data = $form->getData();
-        if (null === $data || !$filter instanceof EAVFilter || !$form->isSubmitted()) {
-            return;
-        }
-        if (is_array($data) && 0 === count($data)) {
+        if (null === $data || (is_array($data) && 0 === count($data))) {
             return;
         }
 
-        $family = $filter->getFamily();
-        if (!$family) {
-            return;
-        }
-        $eavQb = new EAVQueryBuilder($qb, $alias);
+        $eavQb = new EAVQueryBuilder($queryHandler->getQueryBuilder(), $queryHandler->getAlias());
         $dqlHandlers = [];
         foreach ($filter->getAttributes() as $attributePath) {
-            $attributeQb = $this->eavFilterHelper->getEAVAttributeQueryBuilder($eavQb, $family, $attributePath);
+            $attributeQb = $queryHandler->getEAVAttributeQueryBuilder($eavQb, $attributePath);
             if (is_array($data)) {
                 $dqlHandlers[] = $attributeQb->in($data);
             } else {
@@ -66,5 +47,31 @@ class ChoiceFilterType extends BaseChoiceFilterType
         if (0 < count($dqlHandlers)) {
             $eavQb->apply($eavQb->getOr($dqlHandlers));
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFormOptions(QueryHandlerInterface $queryHandler, FilterInterface $filter): array
+    {
+//        if (!$queryHandler instanceof DoctrineQueryHandlerInterface) {
+//            throw new BadQueryHandlerException($queryHandler, DoctrineQueryHandlerInterface::class);
+//        }
+//        if (isset($this->formOptions['choices'])) {
+//            return $this->formOptions;
+//        }
+//        $choices = [];
+//        $alias = $queryHandler->getAlias();
+//        foreach ($this->getFullAttributeReferences($filter, $alias) as $column) {
+//            $qb = clone $queryHandler->getQueryBuilder();
+//            $qb->select("{$column} AS __value")
+//                ->groupBy($column);
+//            foreach ($qb->getQuery()->getArrayResult() as $result) {
+//                $value = $result['__value'];
+//                $choices[$value] = $value;
+//            }
+//        }
+//
+//        return array_merge($this->formOptions, ['choices' => $choices]);
     }
 }
