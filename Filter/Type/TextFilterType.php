@@ -2,15 +2,10 @@
 
 namespace Sidus\EAVFilterBundle\Filter\Type;
 
-use Doctrine\ORM\QueryBuilder;
-use Sidus\EAVFilterBundle\Configuration\EAVQueryHandlerInterface;
-use Sidus\EAVFilterBundle\Filter\EAVFilter;
-use Sidus\EAVFilterBundle\Filter\EAVFilterHelper;
+use Sidus\EAVFilterBundle\Query\Handler\EAVQueryHandlerInterface;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
 use Sidus\FilterBundle\Exception\BadQueryHandlerException;
-use Sidus\FilterBundle\Filter\Doctrine\DoctrineFilterInterface;
 use Sidus\FilterBundle\Filter\FilterInterface;
-use Sidus\FilterBundle\Filter\Type\Doctrine\TextFilterType as BaseTextFilterType;
 use Sidus\FilterBundle\Query\Handler\QueryHandlerInterface;
 use Symfony\Component\Form\FormInterface;
 

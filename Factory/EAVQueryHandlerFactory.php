@@ -3,7 +3,7 @@
 namespace Sidus\EAVFilterBundle\Factory;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Sidus\EAVFilterBundle\Configuration\EAVQueryHandler;
+use Sidus\EAVFilterBundle\Query\Handler\EAVQueryHandler;
 use Sidus\EAVModelBundle\Registry\FamilyRegistry;
 use Sidus\FilterBundle\Factory\QueryHandlerFactoryInterface;
 use Sidus\FilterBundle\Query\Handler\Configuration\QueryHandlerConfigurationInterface;
@@ -34,6 +34,7 @@ class EAVQueryHandlerFactory implements QueryHandlerFactoryInterface
         Registry $doctrine,
         FamilyRegistry $familyRegistry
     ) {
+        $this->filterTypeRegistry = $filterTypeRegistry;
         $this->doctrine = $doctrine;
         $this->familyRegistry = $familyRegistry;
     }

@@ -2,7 +2,7 @@
 
 namespace Sidus\EAVFilterBundle\Filter\Type;
 
-use Sidus\EAVFilterBundle\Configuration\EAVQueryHandlerInterface;
+use Sidus\EAVFilterBundle\Query\Handler\EAVQueryHandlerInterface;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
 use Sidus\FilterBundle\Exception\BadQueryHandlerException;
 use Sidus\FilterBundle\Filter\FilterInterface;

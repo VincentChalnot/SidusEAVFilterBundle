@@ -1,24 +1,13 @@
 <?php
 
-namespace Sidus\EAVFilterBundle\Configuration;
+namespace Sidus\EAVFilterBundle\Query\Handler;
 
-use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\ORM\QueryBuilder;
 use Sidus\EAVModelBundle\Doctrine\AttributeQueryBuilderInterface;
-use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilderInterface;
 use Sidus\EAVModelBundle\Entity\DataRepository;
-use Sidus\EAVModelBundle\Registry\FamilyRegistry;
 use Sidus\EAVModelBundle\Model\FamilyInterface;
-use Sidus\FilterBundle\DTO\SortConfig;
 use Sidus\FilterBundle\Filter\FilterInterface;
-use Sidus\FilterBundle\Query\Handler\AbstractQueryHandler;
-use Sidus\FilterBundle\Query\Handler\Configuration\QueryHandlerConfigurationInterface;
-use Sidus\FilterBundle\Query\Handler\Doctrine\DoctrineQueryHandler;
 use Sidus\FilterBundle\Query\Handler\Doctrine\DoctrineQueryHandlerInterface;
-use Sidus\FilterBundle\Query\Handler\QueryHandlerInterface;
-use Sidus\FilterBundle\Registry\FilterTypeRegistry;
-use UnexpectedValueException;
 
 /**
  * Handles filtering on EAV model

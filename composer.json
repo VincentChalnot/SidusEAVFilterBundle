@@ -26,6 +26,6 @@
     },
     "require": {
         "sidus/eav-model-bundle": "dev-v1.2.x-dev",
-        "sidus/filter-bundle": "dev-v1.2.x-dev"
+        "sidus/filter-bundle": "dev-v1.3-dev"
     }
 }

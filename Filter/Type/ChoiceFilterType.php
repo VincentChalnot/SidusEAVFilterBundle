@@ -2,7 +2,7 @@
 
 namespace Sidus\EAVFilterBundle\Filter\Type;
 
-use Sidus\EAVFilterBundle\Configuration\EAVQueryHandlerInterface;
+use Sidus\EAVFilterBundle\Query\Handler\EAVQueryHandlerInterface;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
 use Sidus\FilterBundle\Exception\BadQueryHandlerException;
 use Sidus\FilterBundle\Filter\FilterInterface;
@@ -49,29 +49,29 @@ class ChoiceFilterType extends AbstractEAVFilterType
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFormOptions(QueryHandlerInterface $queryHandler, FilterInterface $filter): array
-    {
-//        if (!$queryHandler instanceof DoctrineQueryHandlerInterface) {
-//            throw new BadQueryHandlerException($queryHandler, DoctrineQueryHandlerInterface::class);
-//        }
-//        if (isset($this->formOptions['choices'])) {
-//            return $this->formOptions;
-//        }
-//        $choices = [];
-//        $alias = $queryHandler->getAlias();
-//        foreach ($this->getFullAttributeReferences($filter, $alias) as $column) {
-//            $qb = clone $queryHandler->getQueryBuilder();
-//            $qb->select("{$column} AS __value")
-//                ->groupBy($column);
-//            foreach ($qb->getQuery()->getArrayResult() as $result) {
-//                $value = $result['__value'];
-//                $choices[$value] = $value;
-//            }
-//        }
-//
-//        return array_merge($this->formOptions, ['choices' => $choices]);
-    }
+//    /**
+//     * {@inheritdoc}
+//     */
+//    public function getFormOptions(QueryHandlerInterface $queryHandler, FilterInterface $filter): array
+//    {
+////        if (!$queryHandler instanceof DoctrineQueryHandlerInterface) {
+////            throw new BadQueryHandlerException($queryHandler, DoctrineQueryHandlerInterface::class);
+////        }
+////        if (isset($this->formOptions['choices'])) {
+////            return $this->formOptions;
+////        }
+////        $choices = [];
+////        $alias = $queryHandler->getAlias();
+////        foreach ($this->getFullAttributeReferences($filter, $alias) as $column) {
+////            $qb = clone $queryHandler->getQueryBuilder();
+////            $qb->select("{$column} AS __value")
+////                ->groupBy($column);
+////            foreach ($qb->getQuery()->getArrayResult() as $result) {
+////                $value = $result['__value'];
+////                $choices[$value] = $value;
+////            }
+////        }
+////
+////        return array_merge($this->formOptions, ['choices' => $choices]);
+//    }
 }

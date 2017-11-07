@@ -1,3 +1,0 @@
-parameters:
-    sidus_filter.filter.class: Sidus\EAVFilterBundle\Filter\EAVFilter
-    sidus_eav_filter.configuration.class: Sidus\EAVFilterBundle\Configuration\EAVFilterConfigurationHandler

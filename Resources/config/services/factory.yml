@@ -1,0 +1,9 @@
+services:
+    sidus_eav_filter.factory.query_handler:
+        class: Sidus\EAVFilterBundle\Factory\EAVQueryHandlerFactory
+        arguments:
+            - '@sidus_filter.registry.filter_type'
+            - '@doctrine'
+            - '@sidus_eav_model.family.registry'
+        tags:
+            - { name: sidus.query_handler_factory }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Sidus\EAVFilterBundle\Configuration;
+namespace Sidus\EAVFilterBundle\Query\Handler;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\QueryBuilder;
@@ -47,9 +47,9 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     ) {
         AbstractQueryHandler::__construct($filterTypeRegistry, $configuration);
         $this->doctrine = $doctrine;
+        $this->familyRegistry = $familyRegistry;
         $this->entityReference = $this->getFamily()->getDataClass();
         $this->repository = $doctrine->getRepository($this->entityReference);
-        $this->familyRegistry = $familyRegistry;
     }
 
     /**
@@ -165,24 +165,23 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     }
 
     /**
-     * @param QueryBuilder $qb
      * @param SortConfig   $sortConfig
      *
      * @throws \Sidus\EAVModelBundle\Exception\MissingAttributeException
      * @throws \UnexpectedValueException
      */
-    protected function applySort(QueryBuilder $qb, SortConfig $sortConfig)
+    protected function applySort(SortConfig $sortConfig)
     {
         $column = $sortConfig->getColumn();
 
         if (!$column || !$this->getFamily()->hasAttribute($column)) {
-            parent::applySort($qb, $sortConfig);
+            parent::applySort($sortConfig);
 
             return;
         }
 
         $attribute = $this->getFamily()->getAttribute($column);
-        $eavQb = new EAVQueryBuilder($qb, $this->alias);
+        $eavQb = new EAVQueryBuilder($this->getQueryBuilder(), $this->alias);
         $eavQb->addOrderBy($eavQb->attribute($attribute), $sortConfig->getDirection() ? 'DESC' : 'ASC');
     }
 }
