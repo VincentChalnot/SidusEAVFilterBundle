@@ -28,5 +28,7 @@ services:
         arguments:
             - choice
             - Symfony\Component\Form\Extension\Core\Type\ChoiceType
+        calls:
+            - [setDoctrine, ['@doctrine']]
         tags:
             - { name: sidus.filter_type }

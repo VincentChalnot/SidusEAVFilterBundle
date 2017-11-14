@@ -30,19 +30,27 @@ class AutocompleteDataFilterType extends ChoiceFilterType
      */
     public function getFormOptions(QueryHandlerInterface $queryHandler, FilterInterface $filter): array
     {
+        if (isset($filter->getFormOptions()['attribute'])) {
+            return parent::getFormOptions($queryHandler, $filter);
+        }
+
         if (!$queryHandler instanceof EAVQueryHandlerInterface) {
             throw new BadQueryHandlerException($queryHandler, EAVQueryHandlerInterface::class);
         }
 
         $eavAttributes = $queryHandler->getEAVAttributes($filter);
-        if (count($eavAttributes) > 1) {
+        if (\count($eavAttributes) > 1) {
             throw new \UnexpectedValueException(
                 "Autocomplete filters does not support multiple attributes ({$filter->getCode()})"
             );
         }
 
-        return [
-            'attribute' => reset($eavAttributes),
-        ];
+        return array_merge(
+            $this->formOptions,
+            [
+                'attribute' => reset($eavAttributes),
+            ],
+            $filter->getFormOptions()
+        );
     }
 }

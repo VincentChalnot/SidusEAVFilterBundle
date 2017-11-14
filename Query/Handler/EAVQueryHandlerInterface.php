@@ -5,6 +5,7 @@ namespace Sidus\EAVFilterBundle\Query\Handler;
 use Sidus\EAVModelBundle\Doctrine\AttributeQueryBuilderInterface;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilderInterface;
 use Sidus\EAVModelBundle\Entity\DataRepository;
+use Sidus\EAVModelBundle\Model\AttributeInterface;
 use Sidus\EAVModelBundle\Model\FamilyInterface;
 use Sidus\FilterBundle\Filter\FilterInterface;
 use Sidus\FilterBundle\Query\Handler\Doctrine\DoctrineQueryHandlerInterface;
@@ -39,7 +40,7 @@ interface EAVQueryHandlerInterface extends DoctrineQueryHandlerInterface
     /**
      * @param FilterInterface $filter
      *
-     * @return array
+     * @return AttributeInterface[]
      */
     public function getEAVAttributes(FilterInterface $filter): array;
 }
