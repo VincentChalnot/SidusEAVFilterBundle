@@ -40,7 +40,7 @@ class TextFilterType extends AbstractEAVFilterType
             $dqlHandlers[] = $attributeQb->like('%'.trim($data, '%').'%');
         }
 
-        if (0 < count($dqlHandlers)) {
+        if (0 < \count($dqlHandlers)) {
             $eavQb->apply($eavQb->getOr($dqlHandlers));
         }
     }

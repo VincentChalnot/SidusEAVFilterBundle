@@ -88,14 +88,17 @@ class ChoiceFilterType extends AbstractEAVFilterType
                 ->andWhere('v.familyCode = :familyCode')
                 ->groupBy($column)
                 ->setParameter('attributeCode', $attribute->getCode())
-                ->setParameter('familyCode', $family->getCode())
-            ;
+                ->setParameter('familyCode', $family->getCode());
             foreach ($qb->getQuery()->getScalarResult() as $item) {
                 $value = reset($item);
                 $choices[$value] = $value;
             }
         }
 
-        return array_merge($this->formOptions, ['choices' => $choices]);
+        return array_merge(
+            $this->formOptions,
+            $filter->getFormOptions(),
+            ['choices' => $choices]
+        );
     }
 }

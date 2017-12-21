@@ -51,12 +51,12 @@ class DateRangeFilterType extends AbstractEAVFilterType
                 }
                 $attributeDqlHandlers[] = $attributeQb->lte($data[DateRangeType::END_NAME]);
             }
-            if (0 < count($attributeDqlHandlers)) {
+            if (0 < \count($attributeDqlHandlers)) {
                 $dqlHandlers[] = $eavQb->getAnd($attributeDqlHandlers);
             }
         }
 
-        if (0 < count($dqlHandlers)) {
+        if (0 < \count($dqlHandlers)) {
             $eavQb->apply($eavQb->getOr($dqlHandlers));
         }
     }
