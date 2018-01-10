@@ -26,9 +26,6 @@ class DateRangeFilterType extends AbstractEAVFilterType
         if (!$queryHandler instanceof EAVQueryHandlerInterface) {
             throw new BadQueryHandlerException($queryHandler, EAVQueryHandlerInterface::class);
         }
-        if (!$form->isSubmitted()) {
-            return;
-        }
         $data = $form->getData();
         if (null === $data) {
             return;

@@ -38,9 +38,6 @@ class ChoiceFilterType extends AbstractEAVFilterType
         if (!$queryHandler instanceof EAVQueryHandlerInterface) {
             throw new BadQueryHandlerException($queryHandler, EAVQueryHandlerInterface::class);
         }
-        if (!$form->isSubmitted()) {
-            return;
-        }
         $data = $form->getData();
         if (null === $data || (\is_array($data) && 0 === \count($data))) {
             return;
