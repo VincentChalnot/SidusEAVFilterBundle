@@ -46,11 +46,11 @@ class AutocompleteDataFilterType extends ChoiceFilterType
         }
 
         return array_merge(
-            $this->formOptions,
-            $filter->getFormOptions(),
+            $this->getDefaultFormOptions($queryHandler, $filter),
             [
                 'attribute' => reset($eavAttributes),
-            ]
+            ],
+            $filter->getFormOptions()
         );
     }
 }

@@ -12,6 +12,8 @@ services:
         arguments:
             - date_range
             - Sidus\FilterBundle\Form\Type\DateRangeType
+        calls:
+            - [setFallbackFilterType, ['@sidus_filter.doctrine.filter.type.date_range']]
         tags:
             - { name: sidus.filter_type }
 
@@ -20,6 +22,8 @@ services:
         arguments:
             - text
             - Symfony\Component\Form\Extension\Core\Type\TextType
+        calls:
+            - [setFallbackFilterType, ['@sidus_filter.doctrine.filter.type.text']]
         tags:
             - { name: sidus.filter_type }
 
@@ -30,5 +34,6 @@ services:
             - Symfony\Component\Form\Extension\Core\Type\ChoiceType
         calls:
             - [setDoctrine, ['@doctrine']]
+            - [setFallbackFilterType, ['@sidus_filter.doctrine.filter.type.choice']]
         tags:
             - { name: sidus.filter_type }

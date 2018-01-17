@@ -6,6 +6,7 @@ use Sidus\EAVFilterBundle\Query\Handler\EAVQueryHandlerInterface;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
 use Sidus\FilterBundle\Exception\BadQueryHandlerException;
 use Sidus\FilterBundle\Filter\FilterInterface;
+use Sidus\FilterBundle\Filter\Type\FilterTypeInterface;
 use Sidus\FilterBundle\Form\Type\DateRangeType;
 use Sidus\FilterBundle\Query\Handler\QueryHandlerInterface;
 use Symfony\Component\Form\FormInterface;
@@ -26,6 +27,12 @@ class DateRangeFilterType extends AbstractEAVFilterType
         if (!$queryHandler instanceof EAVQueryHandlerInterface) {
             throw new BadQueryHandlerException($queryHandler, EAVQueryHandlerInterface::class);
         }
+        if (!$queryHandler->isEAVFilter($filter)) {
+            $this->fallbackFilterType->handleForm($queryHandler, $filter, $form);
+
+            return;
+        }
+
         $data = $form->getData();
         if (null === $data) {
             return;

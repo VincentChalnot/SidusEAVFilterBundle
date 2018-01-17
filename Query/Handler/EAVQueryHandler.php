@@ -9,6 +9,7 @@ use Sidus\EAVModelBundle\Doctrine\AttributeQueryBuilderInterface;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilderInterface;
 use Sidus\EAVModelBundle\Entity\DataRepository;
+use Sidus\EAVModelBundle\Exception\MissingAttributeException;
 use Sidus\EAVModelBundle\Model\AttributeInterface;
 use Sidus\EAVModelBundle\Registry\FamilyRegistry;
 use Sidus\EAVModelBundle\Model\FamilyInterface;
@@ -101,6 +102,24 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     public function getEAVAttributes(FilterInterface $filter): array
     {
         return $this->filterHelper->getEAVAttributes($this->getFamily(), $filter->getAttributes());
+    }
+
+    /**
+     * @param FilterInterface $filter
+     *
+     * @throws \UnexpectedValueException
+     *
+     * @return bool
+     */
+    public function isEAVFilter(FilterInterface $filter): bool
+    {
+        try {
+            $this->getEAVAttributes($filter);
+
+            return true;
+        } catch (MissingAttributeException $e) {
+            return false;
+        }
     }
 
     /**

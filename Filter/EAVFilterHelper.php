@@ -4,6 +4,8 @@ namespace Sidus\EAVFilterBundle\Filter;
 
 use Sidus\EAVModelBundle\Doctrine\AttributeQueryBuilderInterface;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilderInterface;
+use Sidus\EAVModelBundle\Exception\MissingAttributeException;
+use Sidus\EAVModelBundle\Exception\MissingFamilyException;
 use Sidus\EAVModelBundle\Model\AttributeInterface;
 use Sidus\EAVModelBundle\Model\FamilyInterface;
 use Sidus\EAVModelBundle\Registry\FamilyRegistry;
@@ -67,6 +69,8 @@ class EAVFilterHelper
      * @param array           $attributePaths
      *
      * @throws \UnexpectedValueException
+     * @throws MissingAttributeException
+     * @throws MissingFamilyException
      *
      * @return AttributeInterface[]
      */
@@ -87,9 +91,6 @@ class EAVFilterHelper
                     $family = $this->familyRegistry->getFamily(reset($families));
                     $attribute = $family->getAttribute($attributeCode); // No check on attribute existence: crash
                 } else { // else we're at root level
-                    if (!$family->hasAttribute($attributeCode)) {
-                        break; // Skip attribute if not EAV
-                    }
                     $attribute = $family->getAttribute($attributeCode);
                 }
             }
