@@ -25,9 +25,12 @@ class TextFilterType extends AbstractEAVFilterType
         if (!$queryHandler instanceof EAVQueryHandlerInterface) {
             throw new BadQueryHandlerException($queryHandler, EAVQueryHandlerInterface::class);
         }
-        if (!$form->isSubmitted()) {
+        if (!$queryHandler->isEAVFilter($filter)) {
+            $this->fallbackFilterType->handleForm($queryHandler, $filter, $form);
+
             return;
         }
+
         $data = $form->getData();
         if (null === $data) {
             return;

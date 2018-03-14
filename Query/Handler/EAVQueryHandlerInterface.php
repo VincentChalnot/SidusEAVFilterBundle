@@ -43,4 +43,11 @@ interface EAVQueryHandlerInterface extends DoctrineQueryHandlerInterface
      * @return AttributeInterface[]
      */
     public function getEAVAttributes(FilterInterface $filter): array;
+
+    /**
+     * @param FilterInterface $filter
+     *
+     * @return bool
+     */
+    public function isEAVFilter(FilterInterface $filter): bool;
 }
