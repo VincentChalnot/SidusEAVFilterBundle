@@ -37,6 +37,7 @@ class TextFilterType extends AbstractEAVFilterType
         }
 
         $eavQb = new EAVQueryBuilder($queryHandler->getQueryBuilder(), $queryHandler->getAlias());
+        $eavQb->setContext($queryHandler->getContext());
         $dqlHandlers = [];
         foreach ($filter->getAttributes() as $attributePath) {
             $attributeQb = $queryHandler->getEAVAttributeQueryBuilder($eavQb, $attributePath);

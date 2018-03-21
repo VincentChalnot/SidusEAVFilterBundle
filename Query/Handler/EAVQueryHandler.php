@@ -141,6 +141,24 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     }
 
     /**
+     * @throws \UnexpectedValueException
+     *
+     * @return array|null
+     */
+    public function getContext(): ?array
+    {
+        $context = $this->getConfiguration()->getOption('context');
+        if ($context) {
+            return $context;
+        }
+        if ($this->getConfiguration()->getOption('use_global_context')) {
+            return $this->getFamily()->getContext();
+        }
+
+        return null;
+    }
+
+    /**
      * @param SortConfig $sortConfig
      *
      * @throws \Sidus\EAVModelBundle\Exception\MissingAttributeException
@@ -158,6 +176,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
 
         $attribute = $this->getFamily()->getAttribute($column);
         $eavQb = new EAVQueryBuilder($this->getQueryBuilder(), $this->alias);
+        $eavQb->setContext($this->getContext());
         $eavQb->addOrderBy($eavQb->attribute($attribute), $sortConfig->getDirection() ? 'DESC' : 'ASC');
     }
 }

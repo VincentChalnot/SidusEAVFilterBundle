@@ -50,4 +50,9 @@ interface EAVQueryHandlerInterface extends DoctrineQueryHandlerInterface
      * @return bool
      */
     public function isEAVFilter(FilterInterface $filter): bool;
+
+    /**
+     * @return array|null
+     */
+    public function getContext(): ?array;
 }
