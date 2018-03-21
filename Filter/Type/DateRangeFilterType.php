@@ -39,6 +39,7 @@ class DateRangeFilterType extends AbstractEAVFilterType
         }
 
         $eavQb = new EAVQueryBuilder($queryHandler->getQueryBuilder(), $queryHandler->getAlias());
+        $eavQb->setContext($queryHandler->getContext());
         $dqlHandlers = [];
         foreach ($filter->getAttributes() as $attributePath) {
             $attributeDqlHandlers = [];
