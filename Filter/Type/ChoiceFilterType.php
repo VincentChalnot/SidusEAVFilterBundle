@@ -95,7 +95,9 @@ class ChoiceFilterType extends AbstractEAVFilterType
         if (1 === \count($attributes)) {
             /** @noinspection PhpUndefinedVariableInspection */
             $attributeFormOptions = $attribute->getFormOptions();
-            $formOptions['choice_translation_domain'] = $attributeFormOptions['choice_translation_domain'] ?? null;
+            if (array_key_exists('choice_translation_domain', $attributeFormOptions)) {
+                $formOptions['choice_translation_domain'] = $attributeFormOptions['choice_translation_domain'];
+            }
         }
 
         return array_merge(
