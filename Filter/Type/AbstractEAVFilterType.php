@@ -67,7 +67,9 @@ abstract class AbstractEAVFilterType extends AbstractFilterType
             $attribute = reset($attributes);
             $attributeFormOptions = $attribute->getFormOptions();
             $formOptions['label'] = (string) $attribute;
-            $formOptions['translation_domain'] = $attributeFormOptions['translation_domain'] ?? false;
+            if (array_key_exists('translation_domain', $attributeFormOptions)) {
+                $formOptions['translation_domain'] = $attributeFormOptions['translation_domain'];
+            }
         }
 
         return $formOptions;
