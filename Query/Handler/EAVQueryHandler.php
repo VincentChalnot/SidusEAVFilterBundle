@@ -19,7 +19,7 @@ use Sidus\EAVModelBundle\Doctrine\DataLoaderInterface;
 use Sidus\EAVModelBundle\Entity\DataRepository;
 use Sidus\EAVModelBundle\Exception\MissingAttributeException;
 use Sidus\EAVModelBundle\Model\AttributeInterface;
-use Sidus\EAVModelBundle\Pager\Adapter\EAVAdapter;
+use Sidus\EAVFilterBundle\Pager\Adapter\EAVAdapter;
 use Sidus\EAVModelBundle\Registry\FamilyRegistry;
 use Sidus\EAVModelBundle\Model\FamilyInterface;
 use Sidus\FilterBundle\DTO\SortConfig;
@@ -54,7 +54,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
      * @param Registry                           $doctrine
      * @param FamilyRegistry                     $familyRegistry
      * @param EAVFilterHelper                    $filterHelper
-     * @param DataLoaderInterface       $dataLoader
+     * @param DataLoaderInterface                $dataLoader
      *
      * @throws \UnexpectedValueException
      */
@@ -209,7 +209,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
         if ($selectedPage) {
             $this->sortConfig->setPage($selectedPage);
         }
-        $this->pager = new Pagerfanta(new EAVAdapter($this->dataLoader, $this->getQueryBuilder()));
+        $this->pager = new Pagerfanta(EAVAdapter::create($this->dataLoader, $this->getQueryBuilder()));
         $this->pager->setMaxPerPage($this->getConfiguration()->getResultsPerPage());
         try {
             $this->pager->setCurrentPage($this->sortConfig->getPage());
