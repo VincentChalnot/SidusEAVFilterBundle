@@ -4,13 +4,22 @@ namespace Sidus\EAVFilterBundle\Query\Handler;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\QueryBuilder;
+use Pagerfanta\Exception\LessThan1CurrentPageException;
+use Pagerfanta\Exception\LessThan1MaxPerPageException;
+use Pagerfanta\Exception\NotIntegerCurrentPageException;
+use Pagerfanta\Exception\NotIntegerMaxPerPageException;
+use Pagerfanta\Exception\NotValidCurrentPageException;
+use Pagerfanta\Exception\OutOfRangeCurrentPageException;
+use Pagerfanta\Pagerfanta;
 use Sidus\EAVFilterBundle\Filter\EAVFilterHelper;
 use Sidus\EAVModelBundle\Doctrine\AttributeQueryBuilderInterface;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilderInterface;
+use Sidus\EAVModelBundle\Doctrine\DataLoaderInterface;
 use Sidus\EAVModelBundle\Entity\DataRepository;
 use Sidus\EAVModelBundle\Exception\MissingAttributeException;
 use Sidus\EAVModelBundle\Model\AttributeInterface;
+use Sidus\EAVFilterBundle\Pager\Adapter\EAVAdapter;
 use Sidus\EAVModelBundle\Registry\FamilyRegistry;
 use Sidus\EAVModelBundle\Model\FamilyInterface;
 use Sidus\FilterBundle\DTO\SortConfig;
@@ -36,12 +45,16 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     /** @var EAVFilterHelper */
     protected $filterHelper;
 
+    /** @var DataLoaderInterface */
+    protected $dataLoader;
+
     /**
      * @param FilterTypeRegistry                 $filterTypeRegistry
      * @param QueryHandlerConfigurationInterface $configuration
      * @param Registry                           $doctrine
      * @param FamilyRegistry                     $familyRegistry
      * @param EAVFilterHelper                    $filterHelper
+     * @param DataLoaderInterface                $dataLoader
      *
      * @throws \UnexpectedValueException
      */
@@ -50,12 +63,14 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
         QueryHandlerConfigurationInterface $configuration,
         Registry $doctrine,
         FamilyRegistry $familyRegistry,
-        EAVFilterHelper $filterHelper
+        EAVFilterHelper $filterHelper,
+        DataLoaderInterface $dataLoader
     ) {
         AbstractQueryHandler::__construct($filterTypeRegistry, $configuration);
         $this->doctrine = $doctrine;
         $this->familyRegistry = $familyRegistry;
         $this->filterHelper = $filterHelper;
+        $this->dataLoader = $dataLoader;
         $this->entityReference = $this->getFamily()->getDataClass();
         $this->repository = $doctrine->getRepository($this->entityReference);
     }
@@ -130,7 +145,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     public function getQueryBuilder(): QueryBuilder
     {
         if (!$this->queryBuilder) {
-            $this->queryBuilder = $this->repository->createOptimizedQueryBuilder($this->getAlias());
+            $this->queryBuilder = $this->repository->createQueryBuilder($this->getAlias());
             $familyParam = uniqid('family', false);
             $this->queryBuilder
                 ->andWhere("{$this->getAlias()}.family = :{$familyParam}")
@@ -178,5 +193,28 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
         $eavQb = new EAVQueryBuilder($this->getQueryBuilder(), $this->alias);
         $eavQb->setContext($this->getContext());
         $eavQb->addOrderBy($eavQb->attribute($attribute), $sortConfig->getDirection() ? 'DESC' : 'ASC');
+    }
+
+    /**
+     * @param int $selectedPage
+     *
+     * @throws LessThan1MaxPerPageException
+     * @throws NotIntegerMaxPerPageException
+     * @throws LessThan1CurrentPageException
+     * @throws NotIntegerCurrentPageException
+     * @throws OutOfRangeCurrentPageException
+     */
+    protected function applyPager($selectedPage = null)
+    {
+        if ($selectedPage) {
+            $this->sortConfig->setPage($selectedPage);
+        }
+        $this->pager = new Pagerfanta(EAVAdapter::create($this->dataLoader, $this->getQueryBuilder()));
+        $this->pager->setMaxPerPage($this->getConfiguration()->getResultsPerPage());
+        try {
+            $this->pager->setCurrentPage($this->sortConfig->getPage());
+        } catch (NotValidCurrentPageException $e) {
+            $this->sortConfig->setPage($this->pager->getCurrentPage());
+        }
     }
 }

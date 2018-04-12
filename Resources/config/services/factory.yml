@@ -6,5 +6,6 @@ services:
             - '@doctrine'
             - '@sidus_eav_model.family.registry'
             - '@sidus_eav_filter.helper.eav_filter'
+            - '@sidus_eav_model.entity.data_loader'
         tags:
             - { name: sidus.query_handler_factory }

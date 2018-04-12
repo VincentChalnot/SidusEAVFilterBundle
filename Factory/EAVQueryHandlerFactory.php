@@ -5,6 +5,7 @@ namespace Sidus\EAVFilterBundle\Factory;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Sidus\EAVFilterBundle\Filter\EAVFilterHelper;
 use Sidus\EAVFilterBundle\Query\Handler\EAVQueryHandler;
+use Sidus\EAVModelBundle\Doctrine\DataLoaderInterface;
 use Sidus\EAVModelBundle\Registry\FamilyRegistry;
 use Sidus\FilterBundle\Factory\QueryHandlerFactoryInterface;
 use Sidus\FilterBundle\Query\Handler\Configuration\QueryHandlerConfigurationInterface;
@@ -28,22 +29,28 @@ class EAVQueryHandlerFactory implements QueryHandlerFactoryInterface
     /** @var EAVFilterHelper */
     protected $filterHelper;
 
+    /** @var DataLoaderInterface */
+    protected $dataLoader;
+
     /**
-     * @param FilterTypeRegistry $filterTypeRegistry
-     * @param Registry           $doctrine
-     * @param FamilyRegistry     $familyRegistry
-     * @param EAVFilterHelper    $filterHelper
+     * @param FilterTypeRegistry           $filterTypeRegistry
+     * @param Registry                     $doctrine
+     * @param FamilyRegistry               $familyRegistry
+     * @param EAVFilterHelper              $filterHelper
+     * @param DataLoaderInterface $dataLoader
      */
     public function __construct(
         FilterTypeRegistry $filterTypeRegistry,
         Registry $doctrine,
         FamilyRegistry $familyRegistry,
-        EAVFilterHelper $filterHelper
+        EAVFilterHelper $filterHelper,
+        DataLoaderInterface $dataLoader
     ) {
         $this->filterTypeRegistry = $filterTypeRegistry;
         $this->doctrine = $doctrine;
         $this->familyRegistry = $familyRegistry;
         $this->filterHelper = $filterHelper;
+        $this->dataLoader = $dataLoader;
     }
 
     /**
@@ -61,7 +68,8 @@ class EAVQueryHandlerFactory implements QueryHandlerFactoryInterface
             $queryHandlerConfiguration,
             $this->doctrine,
             $this->familyRegistry,
-            $this->filterHelper
+            $this->filterHelper,
+            $this->dataLoader
         );
     }
 
