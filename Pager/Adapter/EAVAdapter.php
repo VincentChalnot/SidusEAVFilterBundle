@@ -22,7 +22,7 @@ class EAVAdapter implements AdapterInterface
 
     /**
      * Automatically creates an adapter with the Sidus/FilterBundle's DoctrineORMAdapter
-     * 
+     *
      * @param DataLoaderInterface $dataLoader
      * @param QueryBuilder        $qb
      *
@@ -64,6 +64,6 @@ class EAVAdapter implements AdapterInterface
      */
     public function getNbResults()
     {
-        $this->baseAdapter->getNbResults();
+        return $this->baseAdapter->getNbResults();
     }
 }
