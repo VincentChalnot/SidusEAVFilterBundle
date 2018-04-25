@@ -163,14 +163,11 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     public function getContext(): ?array
     {
         $context = $this->getConfiguration()->getOption('context');
-        if ($context) {
-            return $context;
-        }
-        if ($this->getConfiguration()->getOption('use_global_context')) {
-            return $this->getFamily()->getContext();
+        if ($context || $this->getConfiguration()->getOption('use_global_context')) {
+            $context = array_merge($this->getFamily()->getContext(), (array) $context);
         }
 
-        return null;
+        return $context;
     }
 
     /**
@@ -209,7 +206,13 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
         if ($selectedPage) {
             $this->sortConfig->setPage($selectedPage);
         }
-        $this->pager = new Pagerfanta(EAVAdapter::create($this->dataLoader, $this->getQueryBuilder()));
+        $this->pager = new Pagerfanta(
+            EAVAdapter::create(
+                $this->dataLoader,
+                $this->getQueryBuilder(),
+                $this->configuration->getOption('loader_depth', 2)
+            )
+        );
         $this->pager->setMaxPerPage($this->getConfiguration()->getResultsPerPage());
         try {
             $this->pager->setCurrentPage($this->sortConfig->getPage());
