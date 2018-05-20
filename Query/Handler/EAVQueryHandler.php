@@ -2,7 +2,7 @@
 
 namespace Sidus\EAVFilterBundle\Query\Handler;
 
-use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Exception\LessThan1CurrentPageException;
 use Pagerfanta\Exception\LessThan1MaxPerPageException;
@@ -51,7 +51,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     /**
      * @param FilterTypeRegistry                 $filterTypeRegistry
      * @param QueryHandlerConfigurationInterface $configuration
-     * @param Registry                           $doctrine
+     * @param ManagerRegistry                    $doctrine
      * @param FamilyRegistry                     $familyRegistry
      * @param EAVFilterHelper                    $filterHelper
      * @param DataLoaderInterface                $dataLoader
@@ -61,7 +61,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     public function __construct(
         FilterTypeRegistry $filterTypeRegistry,
         QueryHandlerConfigurationInterface $configuration,
-        Registry $doctrine,
+        ManagerRegistry $doctrine,
         FamilyRegistry $familyRegistry,
         EAVFilterHelper $filterHelper,
         DataLoaderInterface $dataLoader

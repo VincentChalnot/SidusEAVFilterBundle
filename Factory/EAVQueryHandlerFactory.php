@@ -2,7 +2,7 @@
 
 namespace Sidus\EAVFilterBundle\Factory;
 
-use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Sidus\EAVFilterBundle\Filter\EAVFilterHelper;
 use Sidus\EAVFilterBundle\Query\Handler\EAVQueryHandler;
 use Sidus\EAVModelBundle\Doctrine\DataLoaderInterface;
@@ -20,7 +20,7 @@ class EAVQueryHandlerFactory implements QueryHandlerFactoryInterface
     /** @var FilterTypeRegistry */
     protected $filterTypeRegistry;
 
-    /** @var Registry */
+    /** @var ManagerRegistry */
     protected $doctrine;
 
     /** @var FamilyRegistry */
@@ -33,15 +33,15 @@ class EAVQueryHandlerFactory implements QueryHandlerFactoryInterface
     protected $dataLoader;
 
     /**
-     * @param FilterTypeRegistry           $filterTypeRegistry
-     * @param Registry                     $doctrine
-     * @param FamilyRegistry               $familyRegistry
-     * @param EAVFilterHelper              $filterHelper
+     * @param FilterTypeRegistry  $filterTypeRegistry
+     * @param ManagerRegistry     $doctrine
+     * @param FamilyRegistry      $familyRegistry
+     * @param EAVFilterHelper     $filterHelper
      * @param DataLoaderInterface $dataLoader
      */
     public function __construct(
         FilterTypeRegistry $filterTypeRegistry,
-        Registry $doctrine,
+        ManagerRegistry $doctrine,
         FamilyRegistry $familyRegistry,
         EAVFilterHelper $filterHelper,
         DataLoaderInterface $dataLoader
