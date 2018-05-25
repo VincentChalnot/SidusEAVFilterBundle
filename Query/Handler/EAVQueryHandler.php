@@ -2,7 +2,7 @@
 
 namespace Sidus\EAVFilterBundle\Query\Handler;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Exception\LessThan1CurrentPageException;
 use Pagerfanta\Exception\LessThan1MaxPerPageException;
@@ -51,7 +51,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     /**
      * @param FilterTypeRegistry                 $filterTypeRegistry
      * @param QueryHandlerConfigurationInterface $configuration
-     * @param ManagerRegistry                    $doctrine
+     * @param EntityManagerInterface             $entityManager
      * @param FamilyRegistry                     $familyRegistry
      * @param EAVFilterHelper                    $filterHelper
      * @param DataLoaderInterface                $dataLoader
@@ -61,18 +61,18 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     public function __construct(
         FilterTypeRegistry $filterTypeRegistry,
         QueryHandlerConfigurationInterface $configuration,
-        ManagerRegistry $doctrine,
+        EntityManagerInterface $entityManager,
         FamilyRegistry $familyRegistry,
         EAVFilterHelper $filterHelper,
         DataLoaderInterface $dataLoader
     ) {
         AbstractQueryHandler::__construct($filterTypeRegistry, $configuration);
-        $this->doctrine = $doctrine;
         $this->familyRegistry = $familyRegistry;
         $this->filterHelper = $filterHelper;
         $this->dataLoader = $dataLoader;
         $this->entityReference = $this->getFamily()->getDataClass();
-        $this->repository = $doctrine->getRepository($this->entityReference);
+        $this->entityManager = $entityManager;
+        $this->repository = $this->entityManager->getRepository($this->entityReference);
     }
 
     /**
@@ -195,6 +195,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     /**
      * @param int $selectedPage
      *
+     * @throws \UnexpectedValueException
      * @throws LessThan1MaxPerPageException
      * @throws NotIntegerMaxPerPageException
      * @throws LessThan1CurrentPageException

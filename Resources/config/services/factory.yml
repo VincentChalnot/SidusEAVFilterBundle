@@ -4,6 +4,11 @@ services:
 
     Sidus\EAVFilterBundle\Factory\EAVQueryHandlerFactory:
         public: false
-        autowire: true
+        arguments:
+            - '@Sidus\FilterBundle\Registry\FilterTypeRegistry'
+            - '@sidus_eav_model.entity_manager'
+            - '@Sidus\EAVModelBundle\Registry\FamilyRegistry'
+            - '@Sidus\EAVFilterBundle\Filter\EAVFilterHelper'
+            - '@Sidus\EAVModelBundle\Doctrine\DataLoaderInterface'
         tags:
             - { name: sidus.query_handler_factory }
