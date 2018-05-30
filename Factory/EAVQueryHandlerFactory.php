@@ -2,7 +2,7 @@
 
 namespace Sidus\EAVFilterBundle\Factory;
 
-use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\EntityManagerInterface;
 use Sidus\EAVFilterBundle\Filter\EAVFilterHelper;
 use Sidus\EAVFilterBundle\Query\Handler\EAVQueryHandler;
 use Sidus\EAVModelBundle\Doctrine\DataLoaderInterface;
@@ -20,8 +20,8 @@ class EAVQueryHandlerFactory implements QueryHandlerFactoryInterface
     /** @var FilterTypeRegistry */
     protected $filterTypeRegistry;
 
-    /** @var Registry */
-    protected $doctrine;
+    /** @var EntityManagerInterface */
+    protected $entityManager;
 
     /** @var FamilyRegistry */
     protected $familyRegistry;
@@ -33,21 +33,21 @@ class EAVQueryHandlerFactory implements QueryHandlerFactoryInterface
     protected $dataLoader;
 
     /**
-     * @param FilterTypeRegistry           $filterTypeRegistry
-     * @param Registry                     $doctrine
-     * @param FamilyRegistry               $familyRegistry
-     * @param EAVFilterHelper              $filterHelper
-     * @param DataLoaderInterface $dataLoader
+     * @param FilterTypeRegistry     $filterTypeRegistry
+     * @param EntityManagerInterface $entityManager
+     * @param FamilyRegistry         $familyRegistry
+     * @param EAVFilterHelper        $filterHelper
+     * @param DataLoaderInterface    $dataLoader
      */
     public function __construct(
         FilterTypeRegistry $filterTypeRegistry,
-        Registry $doctrine,
+        EntityManagerInterface $entityManager,
         FamilyRegistry $familyRegistry,
         EAVFilterHelper $filterHelper,
         DataLoaderInterface $dataLoader
     ) {
         $this->filterTypeRegistry = $filterTypeRegistry;
-        $this->doctrine = $doctrine;
+        $this->entityManager = $entityManager;
         $this->familyRegistry = $familyRegistry;
         $this->filterHelper = $filterHelper;
         $this->dataLoader = $dataLoader;
@@ -66,7 +66,7 @@ class EAVQueryHandlerFactory implements QueryHandlerFactoryInterface
         return new EAVQueryHandler(
             $this->filterTypeRegistry,
             $queryHandlerConfiguration,
-            $this->doctrine,
+            $this->entityManager,
             $this->familyRegistry,
             $this->filterHelper,
             $this->dataLoader

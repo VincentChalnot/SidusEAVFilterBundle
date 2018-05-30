@@ -1,11 +1,14 @@
 services:
-    sidus_eav_filter.factory.query_handler:
-        class: Sidus\EAVFilterBundle\Factory\EAVQueryHandlerFactory
+    Sidus\FilterBundle\Factory\QueryHandlerFactoryInterface:
+        alias: Sidus\EAVFilterBundle\Factory\EAVQueryHandlerFactory
+
+    Sidus\EAVFilterBundle\Factory\EAVQueryHandlerFactory:
+        public: false
         arguments:
-            - '@sidus_filter.registry.filter_type'
-            - '@doctrine'
-            - '@sidus_eav_model.family.registry'
-            - '@sidus_eav_filter.helper.eav_filter'
-            - '@sidus_eav_model.entity.data_loader'
+            - '@Sidus\FilterBundle\Registry\FilterTypeRegistry'
+            - '@sidus_eav_model.entity_manager'
+            - '@Sidus\EAVModelBundle\Registry\FamilyRegistry'
+            - '@Sidus\EAVFilterBundle\Filter\EAVFilterHelper'
+            - '@Sidus\EAVModelBundle\Doctrine\DataLoaderInterface'
         tags:
             - { name: sidus.query_handler_factory }

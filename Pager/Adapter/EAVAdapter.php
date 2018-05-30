@@ -20,32 +20,39 @@ class EAVAdapter implements AdapterInterface
     /** @var DataLoaderInterface */
     protected $dataLoader;
 
+    /** @var int */
+    protected $depth;
+
     /**
      * Automatically creates an adapter with the Sidus/FilterBundle's DoctrineORMAdapter
      *
      * @param DataLoaderInterface $dataLoader
      * @param QueryBuilder        $qb
+     * @param int                 $depth
      *
      * @return EAVAdapter
      */
-    public static function create(DataLoaderInterface $dataLoader, QueryBuilder $qb)
+    public static function create(DataLoaderInterface $dataLoader, QueryBuilder $qb, $depth = 2)
     {
         return new self(
             $dataLoader,
-            new DoctrineORMAdapter($qb, false)
+            new DoctrineORMAdapter($qb, false, $depth)
         );
     }
 
     /**
      * @param DataLoaderInterface $dataLoader
      * @param AdapterInterface    $baseAdapter
+     * @param int                 $depth
      */
     public function __construct(
         DataLoaderInterface $dataLoader,
-        AdapterInterface $baseAdapter
+        AdapterInterface $baseAdapter,
+        $depth = 2
     ) {
         $this->dataLoader = $dataLoader;
         $this->baseAdapter = $baseAdapter;
+        $this->depth = (int) $depth;
     }
 
     /**
@@ -54,7 +61,7 @@ class EAVAdapter implements AdapterInterface
     public function getSlice($offset, $length)
     {
         $iterator = $this->baseAdapter->getSlice($offset, $length);
-        $this->dataLoader->load($iterator);
+        $this->dataLoader->load($iterator, $this->depth);
 
         return $iterator;
     }

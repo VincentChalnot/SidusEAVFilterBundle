@@ -2,7 +2,7 @@
 
 namespace Sidus\EAVFilterBundle\Query\Handler;
 
-use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Exception\LessThan1CurrentPageException;
 use Pagerfanta\Exception\LessThan1MaxPerPageException;
@@ -51,7 +51,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     /**
      * @param FilterTypeRegistry                 $filterTypeRegistry
      * @param QueryHandlerConfigurationInterface $configuration
-     * @param Registry                           $doctrine
+     * @param EntityManagerInterface             $entityManager
      * @param FamilyRegistry                     $familyRegistry
      * @param EAVFilterHelper                    $filterHelper
      * @param DataLoaderInterface                $dataLoader
@@ -61,18 +61,18 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     public function __construct(
         FilterTypeRegistry $filterTypeRegistry,
         QueryHandlerConfigurationInterface $configuration,
-        Registry $doctrine,
+        EntityManagerInterface $entityManager,
         FamilyRegistry $familyRegistry,
         EAVFilterHelper $filterHelper,
         DataLoaderInterface $dataLoader
     ) {
         AbstractQueryHandler::__construct($filterTypeRegistry, $configuration);
-        $this->doctrine = $doctrine;
         $this->familyRegistry = $familyRegistry;
         $this->filterHelper = $filterHelper;
         $this->dataLoader = $dataLoader;
         $this->entityReference = $this->getFamily()->getDataClass();
-        $this->repository = $doctrine->getRepository($this->entityReference);
+        $this->entityManager = $entityManager;
+        $this->repository = $this->entityManager->getRepository($this->entityReference);
     }
 
     /**
@@ -163,14 +163,11 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     public function getContext(): ?array
     {
         $context = $this->getConfiguration()->getOption('context');
-        if ($context) {
-            return $context;
-        }
-        if ($this->getConfiguration()->getOption('use_global_context')) {
-            return $this->getFamily()->getContext();
+        if ($context || $this->getConfiguration()->getOption('use_global_context')) {
+            $context = array_merge($this->getFamily()->getContext(), (array) $context);
         }
 
-        return null;
+        return $context;
     }
 
     /**
@@ -198,6 +195,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     /**
      * @param int $selectedPage
      *
+     * @throws \UnexpectedValueException
      * @throws LessThan1MaxPerPageException
      * @throws NotIntegerMaxPerPageException
      * @throws LessThan1CurrentPageException
@@ -209,7 +207,13 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
         if ($selectedPage) {
             $this->sortConfig->setPage($selectedPage);
         }
-        $this->pager = new Pagerfanta(EAVAdapter::create($this->dataLoader, $this->getQueryBuilder()));
+        $this->pager = new Pagerfanta(
+            EAVAdapter::create(
+                $this->dataLoader,
+                $this->getQueryBuilder(),
+                $this->configuration->getOption('loader_depth', 2)
+            )
+        );
         $this->pager->setMaxPerPage($this->getConfiguration()->getResultsPerPage());
         try {
             $this->pager->setCurrentPage($this->sortConfig->getPage());

@@ -2,12 +2,11 @@
 
 namespace Sidus\EAVFilterBundle\Filter\Type;
 
-use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Sidus\EAVFilterBundle\Query\Handler\EAVQueryHandlerInterface;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
 use Sidus\FilterBundle\Exception\BadQueryHandlerException;
 use Sidus\FilterBundle\Filter\FilterInterface;
-use Sidus\FilterBundle\Filter\Type\FilterTypeInterface;
 use Sidus\FilterBundle\Query\Handler\QueryHandlerInterface;
 use Symfony\Component\Form\FormInterface;
 
@@ -16,13 +15,13 @@ use Symfony\Component\Form\FormInterface;
  */
 class ChoiceFilterType extends AbstractEAVFilterType
 {
-    /** @var Registry */
+    /** @var ManagerRegistry */
     protected $doctrine;
 
     /**
-     * @param Registry $doctrine
+     * @param ManagerRegistry $doctrine
      */
-    public function setDoctrine(Registry $doctrine)
+    public function setDoctrine(ManagerRegistry $doctrine)
     {
         $this->doctrine = $doctrine;
     }

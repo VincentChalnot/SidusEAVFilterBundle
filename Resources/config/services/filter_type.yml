@@ -1,39 +1,39 @@
 services:
-    sidus_eav_filter.filter.type.autocomplete_data:
-        class: Sidus\EAVFilterBundle\Filter\Type\AutocompleteDataFilterType
+    Sidus\EAVFilterBundle\Filter\Type\AutocompleteDataFilterType:
+        public: false
         arguments:
             - autocomplete_data
             - Sidus\EAVBootstrapBundle\Form\Type\AutocompleteDataSelectorType
         tags:
             - { name: sidus.filter_type }
 
-    sidus_eav_filter.filter.type.date_range:
-        class: Sidus\EAVFilterBundle\Filter\Type\DateRangeFilterType
+    Sidus\EAVFilterBundle\Filter\Type\DateRangeFilterType:
+        public: false
         arguments:
             - date_range
             - Sidus\FilterBundle\Form\Type\DateRangeType
         calls:
-            - [setFallbackFilterType, ['@sidus_filter.doctrine.filter.type.date_range']]
+            - [setFallbackFilterType, ['@Sidus\FilterBundle\Filter\Type\Doctrine\DateRangeFilterType']]
         tags:
             - { name: sidus.filter_type }
 
-    sidus_eav_filter.filter.type.text:
-        class: Sidus\EAVFilterBundle\Filter\Type\TextFilterType
+    Sidus\EAVFilterBundle\Filter\Type\TextFilterType:
+        public: false
         arguments:
             - text
             - Symfony\Component\Form\Extension\Core\Type\TextType
         calls:
-            - [setFallbackFilterType, ['@sidus_filter.doctrine.filter.type.text']]
+            - [setFallbackFilterType, ['@Sidus\FilterBundle\Filter\Type\Doctrine\TextFilterType']]
         tags:
             - { name: sidus.filter_type }
 
-    sidus_eav_filter.filter.type.choice:
-        class: Sidus\EAVFilterBundle\Filter\Type\ChoiceFilterType
+    Sidus\EAVFilterBundle\Filter\Type\ChoiceFilterType:
+        public: false
         arguments:
             - choice
             - Symfony\Component\Form\Extension\Core\Type\ChoiceType
         calls:
-            - [setDoctrine, ['@doctrine']]
-            - [setFallbackFilterType, ['@sidus_filter.doctrine.filter.type.choice']]
+            - [setDoctrine, ['@Doctrine\Common\Persistence\ManagerRegistry']]
+            - [setFallbackFilterType, ['@Sidus\FilterBundle\Filter\Type\Doctrine\ChoiceFilterType']]
         tags:
             - { name: sidus.filter_type }
