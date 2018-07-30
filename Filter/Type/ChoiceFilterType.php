@@ -8,7 +8,6 @@ use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
 use Sidus\FilterBundle\Exception\BadQueryHandlerException;
 use Sidus\FilterBundle\Filter\FilterInterface;
 use Sidus\FilterBundle\Query\Handler\QueryHandlerInterface;
-use Symfony\Component\Form\FormInterface;
 
 /**
  * Replaces the standard ChoiceFilterType
@@ -32,18 +31,16 @@ class ChoiceFilterType extends AbstractEAVFilterType
      * @throws \LogicException
      * @throws \UnexpectedValueException
      */
-    public function handleForm(QueryHandlerInterface $queryHandler, FilterInterface $filter, FormInterface $form)
+    public function handleData(QueryHandlerInterface $queryHandler, FilterInterface $filter, $data)
     {
         if (!$queryHandler instanceof EAVQueryHandlerInterface) {
             throw new BadQueryHandlerException($queryHandler, EAVQueryHandlerInterface::class);
         }
         if (!$queryHandler->isEAVFilter($filter)) {
-            $this->fallbackFilterType->handleForm($queryHandler, $filter, $form);
+            $this->fallbackFilterType->handleData($queryHandler, $filter, $data);
 
             return;
         }
-
-        $data = $form->getData();
         if (null === $data || (\is_array($data) && 0 === \count($data))) {
             return;
         }
