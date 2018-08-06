@@ -31,7 +31,7 @@ class ChoiceFilterType extends AbstractEAVFilterType
      * @throws \LogicException
      * @throws \UnexpectedValueException
      */
-    public function handleData(QueryHandlerInterface $queryHandler, FilterInterface $filter, $data)
+    public function handleData(QueryHandlerInterface $queryHandler, FilterInterface $filter, $data): void
     {
         if (!$queryHandler instanceof EAVQueryHandlerInterface) {
             throw new BadQueryHandlerException($queryHandler, EAVQueryHandlerInterface::class);
@@ -41,7 +41,7 @@ class ChoiceFilterType extends AbstractEAVFilterType
 
             return;
         }
-        if (null === $data || (\is_array($data) && 0 === \count($data))) {
+        if (\is_array($data) && 0 === \count($data)) {
             return;
         }
 

@@ -20,7 +20,7 @@ class DateRangeFilterType extends AbstractEAVFilterType
      * @throws \LogicException
      * @throws \UnexpectedValueException
      */
-    public function handleData(QueryHandlerInterface $queryHandler, FilterInterface $filter, $data)
+    public function handleData(QueryHandlerInterface $queryHandler, FilterInterface $filter, $data): void
     {
         if (!$queryHandler instanceof EAVQueryHandlerInterface) {
             throw new BadQueryHandlerException($queryHandler, EAVQueryHandlerInterface::class);
@@ -28,9 +28,6 @@ class DateRangeFilterType extends AbstractEAVFilterType
         if (!$queryHandler->isEAVFilter($filter)) {
             $this->fallbackFilterType->handleData($queryHandler, $filter, $data);
 
-            return;
-        }
-        if (null === $data) {
             return;
         }
 

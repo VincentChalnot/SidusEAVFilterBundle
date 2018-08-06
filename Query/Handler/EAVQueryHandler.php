@@ -4,12 +4,6 @@ namespace Sidus\EAVFilterBundle\Query\Handler;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
-use Pagerfanta\Exception\LessThan1CurrentPageException;
-use Pagerfanta\Exception\LessThan1MaxPerPageException;
-use Pagerfanta\Exception\NotIntegerCurrentPageException;
-use Pagerfanta\Exception\NotIntegerMaxPerPageException;
-use Pagerfanta\Exception\NotValidCurrentPageException;
-use Pagerfanta\Exception\OutOfRangeCurrentPageException;
 use Pagerfanta\Pagerfanta;
 use Sidus\EAVFilterBundle\Filter\EAVFilterHelper;
 use Sidus\EAVModelBundle\Doctrine\AttributeQueryBuilderInterface;
@@ -193,32 +187,18 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     }
 
     /**
-     * @param int $selectedPage
+     * {@inheritdoc}
      *
      * @throws \UnexpectedValueException
-     * @throws LessThan1MaxPerPageException
-     * @throws NotIntegerMaxPerPageException
-     * @throws LessThan1CurrentPageException
-     * @throws NotIntegerCurrentPageException
-     * @throws OutOfRangeCurrentPageException
      */
-    protected function applyPager($selectedPage = null)
+    protected function createPager(): Pagerfanta
     {
-        if ($selectedPage) {
-            $this->sortConfig->setPage($selectedPage);
-        }
-        $this->pager = new Pagerfanta(
+        return new Pagerfanta(
             EAVAdapter::create(
                 $this->dataLoader,
                 $this->getQueryBuilder(),
                 $this->configuration->getOption('loader_depth', 2)
             )
         );
-        $this->pager->setMaxPerPage($this->getConfiguration()->getResultsPerPage());
-        try {
-            $this->pager->setCurrentPage($this->sortConfig->getPage());
-        } catch (NotValidCurrentPageException $e) {
-            $this->sortConfig->setPage($this->pager->getCurrentPage());
-        }
     }
 }
