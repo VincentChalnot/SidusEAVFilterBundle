@@ -172,18 +172,23 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
      */
     protected function applySort(SortConfig $sortConfig)
     {
-        $column = $sortConfig->getColumn();
+        $attributePath = $sortConfig->getColumn();
+        if (!$attributePath) {
+            return;
+        }
 
-        if (!$column || !$this->getFamily()->hasAttribute($column)) {
+        $rootAttribute = explode('.', $attributePath)[0];
+        if (!$rootAttribute || !$this->getFamily()->hasAttribute($rootAttribute)) {
             parent::applySort($sortConfig);
 
             return;
         }
 
-        $attribute = $this->getFamily()->getAttribute($column);
-        $eavQb = new EAVQueryBuilder($this->getQueryBuilder(), $this->alias);
+        $qb = $this->getQueryBuilder();
+        $eavQb = new EAVQueryBuilder($qb, $this->getAlias());
         $eavQb->setContext($this->getContext());
-        $eavQb->addOrderBy($eavQb->attribute($attribute), $sortConfig->getDirection() ? 'DESC' : 'ASC');
+        $attributeQb = $this->getEAVAttributeQueryBuilder($eavQb, $attributePath);
+        $qb->addOrderBy($attributeQb->applyJoin()->getColumn(), $sortConfig->getDirection() ? 'DESC' : 'ASC');
     }
 
     /**
