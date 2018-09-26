@@ -30,6 +30,7 @@ class EAVFilterHelper
      * @param EAVQueryBuilderInterface $eavQueryBuilder
      * @param FamilyInterface          $family
      * @param string                   $attributePath
+     * @param bool                     $enforceFamilyCondition
      *
      * @throws \UnexpectedValueException
      *
@@ -38,7 +39,8 @@ class EAVFilterHelper
     public function getEAVAttributeQueryBuilder(
         EAVQueryBuilderInterface $eavQueryBuilder,
         FamilyInterface $family,
-        $attributePath
+        $attributePath,
+        $enforceFamilyCondition = true
     ): AttributeQueryBuilderInterface {
         $attributeQueryBuilder = null;
         $attribute = null;
@@ -58,7 +60,7 @@ class EAVFilterHelper
                 $eavQueryBuilder = $attributeQueryBuilder->join();
             }
             $attribute = $family->getAttribute($attributeCode);
-            $attributeQueryBuilder = $eavQueryBuilder->attribute($attribute);
+            $attributeQueryBuilder = $eavQueryBuilder->attribute($attribute, $enforceFamilyCondition);
         }
 
         return $attributeQueryBuilder;

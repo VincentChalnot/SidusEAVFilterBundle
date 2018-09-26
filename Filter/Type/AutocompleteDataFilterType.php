@@ -3,7 +3,6 @@
 namespace Sidus\EAVFilterBundle\Filter\Type;
 
 use Sidus\EAVFilterBundle\Query\Handler\EAVQueryHandlerInterface;
-use Sidus\EAVModelBundle\Registry\FamilyRegistry;
 use Sidus\FilterBundle\Exception\BadQueryHandlerException;
 use Sidus\FilterBundle\Filter\FilterInterface;
 use Sidus\FilterBundle\Query\Handler\QueryHandlerInterface;
@@ -13,17 +12,6 @@ use Sidus\FilterBundle\Query\Handler\QueryHandlerInterface;
  */
 class AutocompleteDataFilterType extends ChoiceFilterType
 {
-    /** @var FamilyRegistry */
-    protected $familyRegistry;
-
-    /**
-     * @param FamilyRegistry $familyRegistry
-     */
-    public function setFamilyRegistry(FamilyRegistry $familyRegistry)
-    {
-        $this->familyRegistry = $familyRegistry;
-    }
-
     /**
      * {@inheritdoc}
      * @throws \UnexpectedValueException

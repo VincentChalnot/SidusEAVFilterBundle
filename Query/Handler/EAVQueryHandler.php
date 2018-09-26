@@ -98,7 +98,12 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
         EAVQueryBuilderInterface $eavQueryBuilder,
         $attributePath
     ): AttributeQueryBuilderInterface {
-        return $this->filterHelper->getEAVAttributeQueryBuilder($eavQueryBuilder, $this->getFamily(), $attributePath);
+        return $this->filterHelper->getEAVAttributeQueryBuilder(
+            $eavQueryBuilder,
+            $this->getFamily(),
+            $attributePath,
+            $this->getConfiguration()->getOption('enforce_family_condition', true)
+        );
     }
 
     /**
@@ -140,10 +145,12 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     {
         if (!$this->queryBuilder) {
             $this->queryBuilder = $this->repository->createQueryBuilder($this->getAlias());
-            $familyParam = uniqid('family', false);
-            $this->queryBuilder
-                ->andWhere("{$this->getAlias()}.family = :{$familyParam}")
-                ->setParameter($familyParam, $this->getFamily()->getCode());
+            if ($this->getConfiguration()->getOption('enforce_family_condition', true)) {
+                $familyParam = uniqid('family', false);
+                $this->queryBuilder
+                    ->andWhere("{$this->getAlias()}.family = :{$familyParam}")
+                    ->setParameter($familyParam, $this->getFamily()->getCode());
+            }
         }
 
         return $this->queryBuilder;

@@ -33,7 +33,16 @@ services:
             - choice
             - Symfony\Component\Form\Extension\Core\Type\ChoiceType
         calls:
-            - [setDoctrine, ['@Doctrine\Common\Persistence\ManagerRegistry']]
             - [setFallbackFilterType, ['@Sidus\FilterBundle\Filter\Type\Doctrine\ChoiceFilterType']]
+        tags:
+            - { name: sidus.filter_type }
+
+    Sidus\EAVFilterBundle\Filter\Type\ExactFilterType:
+        public: false
+        arguments:
+            - exact
+            - Symfony\Component\Form\Extension\Core\Type\TextType
+        calls:
+            - [setFallbackFilterType, ['@Sidus\FilterBundle\Filter\Type\Doctrine\ExactFilterType']]
         tags:
             - { name: sidus.filter_type }

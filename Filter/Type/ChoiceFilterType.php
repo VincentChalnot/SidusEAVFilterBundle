@@ -2,9 +2,8 @@
 
 namespace Sidus\EAVFilterBundle\Filter\Type;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
 use Sidus\EAVFilterBundle\Query\Handler\EAVQueryHandlerInterface;
-use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
+use Sidus\EAVModelBundle\Doctrine\AttributeQueryBuilderInterface;
 use Sidus\FilterBundle\Exception\BadQueryHandlerException;
 use Sidus\FilterBundle\Filter\FilterInterface;
 use Sidus\FilterBundle\Query\Handler\QueryHandlerInterface;
@@ -12,56 +11,8 @@ use Sidus\FilterBundle\Query\Handler\QueryHandlerInterface;
 /**
  * Replaces the standard ChoiceFilterType
  */
-class ChoiceFilterType extends AbstractEAVFilterType
+class ChoiceFilterType extends AbstractSimpleFilterType
 {
-    /** @var ManagerRegistry */
-    protected $doctrine;
-
-    /**
-     * @param ManagerRegistry $doctrine
-     */
-    public function setDoctrine(ManagerRegistry $doctrine)
-    {
-        $this->doctrine = $doctrine;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws \LogicException
-     * @throws \UnexpectedValueException
-     */
-    public function handleData(QueryHandlerInterface $queryHandler, FilterInterface $filter, $data): void
-    {
-        if (!$queryHandler instanceof EAVQueryHandlerInterface) {
-            throw new BadQueryHandlerException($queryHandler, EAVQueryHandlerInterface::class);
-        }
-        if (!$queryHandler->isEAVFilter($filter)) {
-            $this->fallbackFilterType->handleData($queryHandler, $filter, $data);
-
-            return;
-        }
-        if (\is_array($data) && 0 === \count($data)) {
-            return;
-        }
-
-        $eavQb = new EAVQueryBuilder($queryHandler->getQueryBuilder(), $queryHandler->getAlias());
-        $eavQb->setContext($queryHandler->getContext());
-        $dqlHandlers = [];
-        foreach ($filter->getAttributes() as $attributePath) {
-            $attributeQb = $queryHandler->getEAVAttributeQueryBuilder($eavQb, $attributePath);
-            if (\is_array($data)) {
-                $dqlHandlers[] = $attributeQb->in($data);
-            } else {
-                $dqlHandlers[] = $attributeQb->equals($data);
-            }
-        }
-
-        if (0 < \count($dqlHandlers)) {
-            $eavQb->apply($eavQb->getOr($dqlHandlers));
-        }
-    }
-
     /**
      * {@inheritdoc}
      */
@@ -101,5 +52,22 @@ class ChoiceFilterType extends AbstractEAVFilterType
             $formOptions,
             $filter->getFormOptions()
         );
+    }
+
+    /**
+     * @param AttributeQueryBuilderInterface $attributeQb
+     * @param mixed                          $data
+     *
+     * @return AttributeQueryBuilderInterface
+     */
+    protected function applyAttributeQueryBuilder(
+        AttributeQueryBuilderInterface $attributeQb,
+        $data
+    ): AttributeQueryBuilderInterface {
+        if (\is_array($data)) {
+            return $attributeQb->in($data);
+        }
+
+        return $attributeQb->equals($data);
     }
 }

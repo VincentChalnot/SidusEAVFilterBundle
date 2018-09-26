@@ -5,17 +5,9 @@ namespace Sidus\EAVFilterBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * Class SidusEAVFilterBundle
- *
- * @package Sidus\EAVFilterBundle
+ * This bundle is an extension for the Sidus/FilterBundle that add compatibility with the EAV model of
+ * Sidus/EAVModelBundle
  */
 class SidusEAVFilterBundle extends Bundle
 {
-    /**
-     * @return string
-     */
-    public function getParent()
-    {
-        return 'SidusFilterBundle';
-    }
 }

@@ -21,7 +21,7 @@ abstract class AbstractEAVFilterType extends AbstractFilterType
     /**
      * @param FilterTypeInterface $fallbackFilterType
      */
-    public function setFallbackFilterType(FilterTypeInterface $fallbackFilterType)
+    public function setFallbackFilterType(FilterTypeInterface $fallbackFilterType): void
     {
         $this->fallbackFilterType = $fallbackFilterType;
     }

@@ -5,9 +5,9 @@ namespace Sidus\EAVFilterBundle\Filter\Type;
 use Sidus\EAVModelBundle\Doctrine\AttributeQueryBuilderInterface;
 
 /**
- * Replaces the standard TextFilterType
+ * Replaces the standard ExactFilterType
  */
-class TextFilterType extends AbstractSimpleFilterType
+class ExactFilterType extends AbstractSimpleFilterType
 {
     /**
      * @param AttributeQueryBuilderInterface $attributeQb
@@ -19,6 +19,6 @@ class TextFilterType extends AbstractSimpleFilterType
         AttributeQueryBuilderInterface $attributeQb,
         $data
     ): AttributeQueryBuilderInterface {
-        return $attributeQb->like('%'.trim($data, '%').'%');
+        return $attributeQb->equals($data);
     }
 }
