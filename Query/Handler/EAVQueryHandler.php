@@ -7,6 +7,7 @@ use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Pagerfanta;
 use Sidus\EAVFilterBundle\Filter\EAVFilterHelper;
 use Sidus\EAVModelBundle\Doctrine\AttributeQueryBuilderInterface;
+use Sidus\EAVModelBundle\Doctrine\ContextualizedDataLoaderInterface;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilderInterface;
 use Sidus\EAVModelBundle\Doctrine\DataLoaderInterface;
@@ -161,10 +162,25 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
      *
      * @return array|null
      */
-    public function getContext(): ?array
+    public function getQueryContext(): ?array
     {
-        $context = $this->getConfiguration()->getOption('context');
-        if ($context || $this->getConfiguration()->getOption('use_global_context')) {
+        $queryContext = $this->getConfiguration()->getOption('query_context');
+        if ($queryContext && $this->getConfiguration()->getOption('use_global_context')) {
+            $queryContext = array_merge($this->getFamily()->getContext(), (array) $queryContext);
+        }
+
+        return $queryContext;
+    }
+
+    /**
+     * @throws \UnexpectedValueException
+     *
+     * @return array|null
+     */
+    public function getResultContext(): ?array
+    {
+        $context = $this->getConfiguration()->getOption('result_context');
+        if ($context) {
             $context = array_merge($this->getFamily()->getContext(), (array) $context);
         }
 
@@ -193,7 +209,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
 
         $qb = $this->getQueryBuilder();
         $eavQb = new EAVQueryBuilder($qb, $this->getAlias());
-        $eavQb->setContext($this->getContext());
+        $eavQb->setContext($this->getQueryContext());
         $attributeQb = $this->getEAVAttributeQueryBuilder($eavQb, $attributePath);
         $qb->addOrderBy($attributeQb->applyJoin()->getColumn(), $sortConfig->getDirection() ? 'DESC' : 'ASC');
     }
@@ -205,6 +221,10 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
      */
     protected function createPager(): Pagerfanta
     {
+        if ($this->dataLoader instanceof ContextualizedDataLoaderInterface && null !== $this->getResultContext()) {
+            $this->dataLoader->setCurrentContext($this->getResultContext());
+        }
+
         return new Pagerfanta(
             EAVAdapter::create(
                 $this->dataLoader,

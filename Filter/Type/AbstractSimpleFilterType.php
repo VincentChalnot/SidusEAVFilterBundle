@@ -37,7 +37,7 @@ abstract class AbstractSimpleFilterType extends AbstractEAVFilterType
         }
 
         $eavQb = new EAVQueryBuilder($queryHandler->getQueryBuilder(), $queryHandler->getAlias());
-        $eavQb->setContext($queryHandler->getContext());
+        $eavQb->setContext($queryHandler->getQueryContext());
         $dqlHandlers = [];
         foreach ($filter->getAttributes() as $attributePath) {
             $attributeQb = $queryHandler->getEAVAttributeQueryBuilder($eavQb, $attributePath);
