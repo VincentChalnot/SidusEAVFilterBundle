@@ -54,5 +54,10 @@ interface EAVQueryHandlerInterface extends DoctrineQueryHandlerInterface
     /**
      * @return array|null
      */
-    public function getContext(): ?array;
+    public function getQueryContext(): ?array;
+
+    /**
+     * @return array|null
+     */
+    public function getResultContext(): ?array;
 }

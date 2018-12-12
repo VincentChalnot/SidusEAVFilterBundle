@@ -46,3 +46,27 @@ services:
             - [setFallbackFilterType, ['@Sidus\FilterBundle\Filter\Type\Doctrine\ExactFilterType']]
         tags:
             - { name: sidus.filter_type }
+
+    Sidus\EAVFilterBundle\Filter\Type\AdvancedTextFilterType:
+        public: false
+        arguments:
+            - advanced_text
+            - Sidus\FilterBundle\Form\Type\ComboFilterType
+            -   input_type: Symfony\Component\Form\Extension\Core\Type\TextType
+                options_choices: '%sidus.filter.advanced_text_choices%'
+        calls:
+            - [setFallbackFilterType, ['@Sidus\FilterBundle\Filter\Type\Doctrine\AdvancedTextFilterType']]
+        tags:
+            - { name: sidus.filter_type }
+
+    Sidus\EAVFilterBundle\Filter\Type\AdvancedNumberFilterType:
+        public: false
+        arguments:
+            - advanced_number
+            - Sidus\FilterBundle\Form\Type\ComboFilterType
+            -   input_type: Symfony\Component\Form\Extension\Core\Type\TextType
+                options_choices: '%sidus.filter.advanced_number_choices%'
+        calls:
+            - [setFallbackFilterType, ['@Sidus\FilterBundle\Filter\Type\Doctrine\AdvancedNumberFilterType']]
+        tags:
+            - { name: sidus.filter_type }

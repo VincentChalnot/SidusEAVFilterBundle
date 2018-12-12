@@ -32,12 +32,12 @@ abstract class AbstractSimpleFilterType extends AbstractEAVFilterType
 
             return;
         }
-        if (\is_array($data) && 0 === \count($data)) {
+        if ($this->isEmpty($data)) {
             return;
         }
 
         $eavQb = new EAVQueryBuilder($queryHandler->getQueryBuilder(), $queryHandler->getAlias());
-        $eavQb->setContext($queryHandler->getContext());
+        $eavQb->setContext($queryHandler->getQueryContext());
         $dqlHandlers = [];
         foreach ($filter->getAttributes() as $attributePath) {
             $attributeQb = $queryHandler->getEAVAttributeQueryBuilder($eavQb, $attributePath);
@@ -59,4 +59,14 @@ abstract class AbstractSimpleFilterType extends AbstractEAVFilterType
         AttributeQueryBuilderInterface $attributeQb,
         $data
     ): AttributeQueryBuilderInterface;
+
+    /**
+     * @param mixed $data
+     *
+     * @return bool
+     */
+    protected function isEmpty($data): bool
+    {
+        return null === $data || (\is_array($data) && 0 === \count($data));
+    }
 }

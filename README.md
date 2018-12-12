@@ -93,6 +93,8 @@ sidus_filter:
                 family: <FamilyCode> # Required
                 # Optional options
                 loader_depth: <int> # Default 2
-                use_global_context: <bool> # Uses the global context for the query
-                context: <array> # If you want to inject the context (or part of it) statically
+                query_context: <array> # If you want to inject a custom context (or part of it) statically for the query
+                use_global_context: <bool> # Merge the query_context with the global context for the query
+                                           # (the results always use the global context by default)
+                result_context: <array> # Same as before but for the results (will inject this in Data::setCurrentContext)
 ````
