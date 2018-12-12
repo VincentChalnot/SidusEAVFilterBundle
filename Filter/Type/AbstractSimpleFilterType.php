@@ -32,7 +32,7 @@ abstract class AbstractSimpleFilterType extends AbstractEAVFilterType
 
             return;
         }
-        if (\is_array($data) && 0 === \count($data)) {
+        if ($this->isEmpty($data)) {
             return;
         }
 
@@ -59,4 +59,14 @@ abstract class AbstractSimpleFilterType extends AbstractEAVFilterType
         AttributeQueryBuilderInterface $attributeQb,
         $data
     ): AttributeQueryBuilderInterface;
+
+    /**
+     * @param mixed $data
+     *
+     * @return bool
+     */
+    protected function isEmpty($data): bool
+    {
+        return null === $data || (\is_array($data) && 0 === \count($data));
+    }
 }

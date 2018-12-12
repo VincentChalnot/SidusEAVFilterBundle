@@ -9,6 +9,8 @@ use Sidus\EAVModelBundle\Doctrine\AttributeQueryBuilderInterface;
  */
 class AdvancedTextFilterType extends AbstractSimpleFilterType
 {
+    protected const EMPTY_OPTIONS = ['empty', 'notempty', 'null', 'notnull'];
+
     /**
      * @param AttributeQueryBuilderInterface $attributeQb
      * @param mixed                          $data
@@ -45,5 +47,20 @@ class AdvancedTextFilterType extends AbstractSimpleFilterType
                 return $attributeQb->isNotNull();
         }
         throw new \UnexpectedValueException("Unknown option '{$data['option']}'");
+    }
+
+    /**
+     * @param mixed $data
+     *
+     * @return bool
+     */
+    protected function isEmpty($data): bool
+    {
+        // Handle specific cases where input can be blank
+        if (array_key_exists('option', $data) && in_array($data['option'], static::EMPTY_OPTIONS, true)) {
+            return true;
+        }
+
+        return parent::isEmpty($data) || empty($data['input']);
     }
 }
