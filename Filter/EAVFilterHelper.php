@@ -1,4 +1,12 @@
 <?php
+/*
+ * This file is part of the Sidus/EAVFilterBundle package.
+ *
+ * Copyright (c) 2015-2018 Vincent Chalnot
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Sidus\EAVFilterBundle\Filter;
 
@@ -12,6 +20,8 @@ use Sidus\EAVModelBundle\Registry\FamilyRegistry;
 
 /**
  * Common EAV logic to work with filters
+ *
+ * @author Vincent Chalnot <vincent@sidus.fr>
  */
 class EAVFilterHelper
 {

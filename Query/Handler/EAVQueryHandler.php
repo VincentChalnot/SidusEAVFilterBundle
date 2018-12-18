@@ -1,8 +1,16 @@
 <?php
+/*
+ * This file is part of the Sidus/EAVFilterBundle package.
+ *
+ * Copyright (c) 2015-2018 Vincent Chalnot
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Sidus\EAVFilterBundle\Query\Handler;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Pagerfanta;
 use Sidus\EAVFilterBundle\Filter\EAVFilterHelper;
@@ -46,7 +54,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     /**
      * @param FilterTypeRegistry                 $filterTypeRegistry
      * @param QueryHandlerConfigurationInterface $configuration
-     * @param EntityManagerInterface             $entityManager
+     * @param ManagerRegistry                    $doctrine
      * @param FamilyRegistry                     $familyRegistry
      * @param EAVFilterHelper                    $filterHelper
      * @param DataLoaderInterface                $dataLoader
@@ -56,7 +64,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     public function __construct(
         FilterTypeRegistry $filterTypeRegistry,
         QueryHandlerConfigurationInterface $configuration,
-        EntityManagerInterface $entityManager,
+        ManagerRegistry $doctrine,
         FamilyRegistry $familyRegistry,
         EAVFilterHelper $filterHelper,
         DataLoaderInterface $dataLoader
@@ -66,7 +74,10 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
         $this->filterHelper = $filterHelper;
         $this->dataLoader = $dataLoader;
         $this->entityReference = $this->getFamily()->getDataClass();
-        $this->entityManager = $entityManager;
+        $this->entityManager = $doctrine->getManagerForClass($this->entityReference);
+        if (!$this->entityManager) {
+            throw new UnexpectedValueException("No manager found for class {$this->entityReference}");
+        }
         $this->repository = $this->entityManager->getRepository($this->entityReference);
     }
 
@@ -166,7 +177,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     {
         $queryContext = $this->getConfiguration()->getOption('query_context');
         if ($queryContext && $this->getConfiguration()->getOption('use_global_context')) {
-            $queryContext = array_merge($this->getFamily()->getContext(), (array) $queryContext);
+            $queryContext = array_merge($this->getFamily()->getContext(), (array)$queryContext);
         }
 
         return $queryContext;
@@ -181,7 +192,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     {
         $context = $this->getConfiguration()->getOption('result_context');
         if ($context) {
-            $context = array_merge($this->getFamily()->getContext(), (array) $context);
+            $context = array_merge($this->getFamily()->getContext(), (array)$context);
         }
 
         return $context;

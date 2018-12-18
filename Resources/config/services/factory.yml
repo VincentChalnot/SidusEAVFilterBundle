@@ -6,7 +6,7 @@ services:
         public: false
         arguments:
             - '@Sidus\FilterBundle\Registry\FilterTypeRegistry'
-            - '@sidus_eav_model.entity_manager'
+            - '@Doctrine\Common\Persistence\ManagerRegistry'
             - '@Sidus\EAVModelBundle\Registry\FamilyRegistry'
             - '@Sidus\EAVFilterBundle\Filter\EAVFilterHelper'
             - '@Sidus\EAVModelBundle\Doctrine\DataLoaderInterface'
