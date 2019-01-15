@@ -42,13 +42,15 @@ class ChoiceFilterType extends AbstractSimpleFilterType
         $choices = [];
         $attributes = $queryHandler->getEAVAttributes($filter);
         foreach ($attributes as $attribute) {
-            /** @noinspection SlowArrayOperationsInLoopInspection */
-            $choices = array_merge($choices, $attribute->getFormOptions()['choices'] ?? []);
+            if (array_key_exists('choices', $attribute->getFormOptions())) {
+                /** @noinspection SlowArrayOperationsInLoopInspection */
+                $choices = array_merge($choices, $attribute->getFormOptions()['choices']);
+            }
         }
-
-        $formOptions = [
-            'choices' => $choices,
-        ];
+        $formOptions = [];
+        if (\count($choices) > 0) {
+            $formOptions['choices'] = $choices;
+        }
         if (1 === \count($attributes)) {
             /** @noinspection PhpUndefinedVariableInspection */
             $attributeFormOptions = $attribute->getFormOptions();
