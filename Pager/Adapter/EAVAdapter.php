@@ -14,13 +14,14 @@ use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Adapter\AdapterInterface;
 use Sidus\EAVModelBundle\Doctrine\DataLoaderInterface;
 use Sidus\FilterBundle\Pagination\DoctrineORMAdapter;
+use Sidus\FilterBundle\Pagination\ManualCountAdapterInterface;
 
 /**
  * Optimize the loading of multiple data at once
  *
  * @author Vincent Chalnot <vincent@sidus.fr>
  */
-class EAVAdapter implements AdapterInterface
+class EAVAdapter implements AdapterInterface, ManualCountAdapterInterface
 {
     /** @var AdapterInterface */
     protected $baseAdapter;
@@ -30,6 +31,9 @@ class EAVAdapter implements AdapterInterface
 
     /** @var int */
     protected $depth;
+
+    /** @var int */
+    protected $nbResults;
 
     /**
      * Automatically creates an adapter with the Sidus/FilterBundle's DoctrineORMAdapter
@@ -79,6 +83,18 @@ class EAVAdapter implements AdapterInterface
      */
     public function getNbResults()
     {
+        if (null !== $this->nbResults) {
+            return $this->nbResults;
+        }
+
         return $this->baseAdapter->getNbResults();
+    }
+
+    /**
+     * @param int $nbResults
+     */
+    public function setNbResults(int $nbResults): void
+    {
+        $this->nbResults = $nbResults;
     }
 }
