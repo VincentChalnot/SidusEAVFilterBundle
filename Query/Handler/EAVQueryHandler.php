@@ -177,7 +177,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     {
         $queryContext = $this->getConfiguration()->getOption('query_context');
         if ($queryContext && $this->getConfiguration()->getOption('use_global_context')) {
-            $queryContext = array_merge($this->getFamily()->getContext(), (array)$queryContext);
+            $queryContext = array_merge($this->getFamily()->getContext(), (array) $queryContext);
         }
 
         return $queryContext;
@@ -192,7 +192,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     {
         $context = $this->getConfiguration()->getOption('result_context');
         if ($context) {
-            $context = array_merge($this->getFamily()->getContext(), (array)$context);
+            $context = array_merge($this->getFamily()->getContext(), (array) $context);
         }
 
         return $context;
