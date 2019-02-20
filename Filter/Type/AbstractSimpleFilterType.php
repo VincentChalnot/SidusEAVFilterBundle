@@ -20,7 +20,7 @@ use Sidus\FilterBundle\Query\Handler\QueryHandlerInterface;
 /**
  * Simple filter type
  *
- * @see TextFilterType
+ * @see    TextFilterType
  *
  * @author Vincent Chalnot <vincent@sidus.fr>
  */
@@ -38,6 +38,11 @@ abstract class AbstractSimpleFilterType extends AbstractEAVFilterType
             throw new BadQueryHandlerException($queryHandler, EAVQueryHandlerInterface::class);
         }
         if (!$queryHandler->isEAVFilter($filter)) {
+            if (!$this->fallbackFilterType) {
+                $m = "Filter '{$filter->getCode()}' with type '{$this->getName()}' has no EAV attribute and no ";
+                $m .= 'fallback filter type.';
+                throw new \LogicException($m);
+            }
             $this->fallbackFilterType->handleData($queryHandler, $filter, $data);
 
             return;
