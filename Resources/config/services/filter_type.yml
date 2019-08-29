@@ -70,3 +70,13 @@ services:
             - [setFallbackFilterType, ['@Sidus\FilterBundle\Filter\Type\Doctrine\AdvancedNumberFilterType']]
         tags:
             - { name: sidus.filter_type }
+
+    Sidus\EAVFilterBundle\Filter\Type\NotNullFilterType:
+        public: false
+        arguments:
+            - not_null
+            - Symfony\Component\Form\Extension\Core\Type\CheckboxType
+        calls:
+            - [setFallbackFilterType, ['@Sidus\FilterBundle\Filter\Type\Doctrine\NotNullFilterType']]
+        tags:
+            - { name: sidus.filter_type }
