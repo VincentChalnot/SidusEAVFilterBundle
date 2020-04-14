@@ -2,7 +2,7 @@
 /*
  * This file is part of the Sidus/EAVFilterBundle package.
  *
- * Copyright (c) 2015-2018 Vincent Chalnot
+ * Copyright (c) 2015-2020 Vincent Chalnot
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,7 +12,9 @@ namespace Sidus\EAVFilterBundle\Filter\Type;
 
 use Sidus\EAVFilterBundle\Query\Handler\EAVQueryHandlerInterface;
 use Sidus\EAVModelBundle\Doctrine\AttributeQueryBuilderInterface;
+use Sidus\EAVModelBundle\Doctrine\DQLHandlerInterface;
 use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilder;
+use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilderInterface;
 use Sidus\FilterBundle\Exception\BadQueryHandlerException;
 use Sidus\FilterBundle\Filter\FilterInterface;
 use Sidus\FilterBundle\Query\Handler\QueryHandlerInterface;
@@ -56,7 +58,7 @@ abstract class AbstractSimpleFilterType extends AbstractEAVFilterType
         $dqlHandlers = [];
         foreach ($filter->getAttributes() as $attributePath) {
             $attributeQb = $queryHandler->getEAVAttributeQueryBuilder($eavQb, $attributePath);
-            $dqlHandlers[] = $this->applyAttributeQueryBuilder($attributeQb, $data);
+            $dqlHandlers[] = $this->applyAttributeQueryBuilder($eavQb, $attributeQb, $data);
         }
 
         if (0 < \count($dqlHandlers)) {
@@ -65,15 +67,17 @@ abstract class AbstractSimpleFilterType extends AbstractEAVFilterType
     }
 
     /**
+     * @param EAVQueryBuilderInterface       $eavQb
      * @param AttributeQueryBuilderInterface $attributeQb
      * @param mixed                          $data
      *
-     * @return AttributeQueryBuilderInterface
+     * @return DQLHandlerInterface
      */
     abstract protected function applyAttributeQueryBuilder(
+        EAVQueryBuilderInterface $eavQb,
         AttributeQueryBuilderInterface $attributeQb,
         $data
-    ): AttributeQueryBuilderInterface;
+    ): DQLHandlerInterface;
 
     /**
      * @param mixed $data

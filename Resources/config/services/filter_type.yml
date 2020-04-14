@@ -37,6 +37,16 @@ services:
         tags:
             - { name: sidus.filter_type }
 
+    Sidus\EAVFilterBundle\Filter\Type\EntityFilterType:
+        public: false
+        arguments:
+            - entity
+            - Sidus\EAVModelBundle\Form\Type\SimpleDataSelectorType
+        calls:
+            - [setFallbackFilterType, ['@Sidus\FilterBundle\Filter\Type\Doctrine\EntityFilterType']]
+        tags:
+            - { name: sidus.filter_type }
+
     Sidus\EAVFilterBundle\Filter\Type\ExactFilterType:
         public: false
         arguments:

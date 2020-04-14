@@ -2,7 +2,7 @@
 /*
  * This file is part of the Sidus/EAVFilterBundle package.
  *
- * Copyright (c) 2015-2018 Vincent Chalnot
+ * Copyright (c) 2015-2020 Vincent Chalnot
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -34,6 +34,21 @@ abstract class AbstractEAVFilterType extends AbstractFilterType
     public function setFallbackFilterType(FilterTypeInterface $fallbackFilterType): void
     {
         $this->fallbackFilterType = $fallbackFilterType;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getFormType(QueryHandlerInterface $queryHandler, FilterInterface $filter): string
+    {
+        if ($this->fallbackFilterType
+            && $queryHandler instanceof EAVQueryHandlerInterface
+            && !$queryHandler->isEAVFilter($filter)
+        ) {
+            return $this->fallbackFilterType->getFormType($queryHandler, $filter);
+        }
+
+        return $this->formType;
     }
 
     /**

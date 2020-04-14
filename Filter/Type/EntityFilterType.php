@@ -16,38 +16,40 @@ use Sidus\FilterBundle\Filter\FilterInterface;
 use Sidus\FilterBundle\Query\Handler\QueryHandlerInterface;
 
 /**
- * Autocomplete filter for data
+ * Replaces the standard EntityFilterType
  *
  * @author Vincent Chalnot <vincent@sidus.fr>
  */
-class AutocompleteDataFilterType extends ChoiceFilterType
+class EntityFilterType extends ChoiceFilterType
 {
     /**
      * {@inheritdoc}
-     * @throws \UnexpectedValueException
      */
     public function getFormOptions(QueryHandlerInterface $queryHandler, FilterInterface $filter): array
     {
-        if (isset($filter->getFormOptions()['attribute'])) {
-            return parent::getFormOptions($queryHandler, $filter);
-        }
-
         if (!$queryHandler instanceof EAVQueryHandlerInterface) {
             throw new BadQueryHandlerException($queryHandler, EAVQueryHandlerInterface::class);
         }
+        if (!$queryHandler->isEAVFilter($filter)) {
+            return $this->getFallbackFormOptions($queryHandler, $filter);
+        }
 
-        $eavAttributes = $queryHandler->getEAVAttributes($filter);
-        if (\count($eavAttributes) > 1) {
-            throw new \UnexpectedValueException(
-                "Autocomplete filters does not support multiple attributes ({$filter->getCode()})"
-            );
+        $allowedFamilies = [];
+        $attributes = $queryHandler->getEAVAttributes($filter);
+        foreach ($attributes as $attribute) {
+            if (!$attribute->getType()->isRelation() || !$attribute->getType()->isEmbedded()) {
+                throw new \LogicException(
+                    "{$attribute->getCode()} is not a relation, please use the 'choice' filter type"
+                );
+            }
+            foreach ($attribute->getOption('allowed_families', []) as $allowedFamily) {
+                $allowedFamilies[] = $allowedFamily;
+            }
         }
 
         return array_merge(
             $this->getDefaultFormOptions($queryHandler, $filter),
-            [
-                'attribute' => reset($eavAttributes),
-            ],
+            ['allowed_families' => array_unique($allowedFamilies)],
             $filter->getFormOptions()
         );
     }

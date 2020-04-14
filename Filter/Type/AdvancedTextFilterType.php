@@ -2,7 +2,7 @@
 /*
  * This file is part of the Sidus/EAVFilterBundle package.
  *
- * Copyright (c) 2015-2018 Vincent Chalnot
+ * Copyright (c) 2015-2020 Vincent Chalnot
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,6 +11,8 @@
 namespace Sidus\EAVFilterBundle\Filter\Type;
 
 use Sidus\EAVModelBundle\Doctrine\AttributeQueryBuilderInterface;
+use Sidus\EAVModelBundle\Doctrine\DQLHandlerInterface;
+use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilderInterface;
 
 /**
  * Replaces the standard TextFilterType
@@ -22,15 +24,13 @@ class AdvancedTextFilterType extends AbstractSimpleFilterType
     protected const EMPTY_OPTIONS = ['empty', 'notempty', 'null', 'notnull'];
 
     /**
-     * @param AttributeQueryBuilderInterface $attributeQb
-     * @param mixed                          $data
-     *
-     * @return AttributeQueryBuilderInterface
+     * {@inheritDoc}
      */
     protected function applyAttributeQueryBuilder(
+        EAVQueryBuilderInterface $eavQb,
         AttributeQueryBuilderInterface $attributeQb,
         $data
-    ): AttributeQueryBuilderInterface {
+    ): DQLHandlerInterface {
         $input = $data['input'];
         switch ($data['option']) {
             case 'exact':

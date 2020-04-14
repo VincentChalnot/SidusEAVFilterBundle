@@ -2,7 +2,7 @@
 /*
  * This file is part of the Sidus/EAVFilterBundle package.
  *
- * Copyright (c) 2015-2018 Vincent Chalnot
+ * Copyright (c) 2015-2020 Vincent Chalnot
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -59,7 +59,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
      * @param EAVFilterHelper                    $filterHelper
      * @param DataLoaderInterface                $dataLoader
      *
-     * @throws \UnexpectedValueException
+     * @throws UnexpectedValueException
      */
     public function __construct(
         FilterTypeRegistry $filterTypeRegistry,
@@ -82,7 +82,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     }
 
     /**
-     * @throws \UnexpectedValueException
+     * @throws UnexpectedValueException
      *
      * @return FamilyInterface
      */
@@ -102,7 +102,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
      * @param EAVQueryBuilderInterface $eavQueryBuilder
      * @param string                   $attributePath
      *
-     * @throws \UnexpectedValueException
+     * @throws UnexpectedValueException
      *
      * @return AttributeQueryBuilderInterface
      */
@@ -121,7 +121,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     /**
      * @param FilterInterface $filter
      *
-     * @throws \UnexpectedValueException
+     * @throws UnexpectedValueException
      *
      * @return AttributeInterface[]
      */
@@ -133,7 +133,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     /**
      * @param FilterInterface $filter
      *
-     * @throws \UnexpectedValueException
+     * @throws UnexpectedValueException
      *
      * @return bool
      */
@@ -149,7 +149,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     }
 
     /**
-     * @throws \UnexpectedValueException
+     * @throws UnexpectedValueException
      *
      * @return QueryBuilder
      */
@@ -169,7 +169,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     }
 
     /**
-     * @throws \UnexpectedValueException
+     * @throws UnexpectedValueException
      *
      * @return array|null
      */
@@ -184,7 +184,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     }
 
     /**
-     * @throws \UnexpectedValueException
+     * @throws UnexpectedValueException
      *
      * @return array|null
      */
@@ -201,8 +201,8 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     /**
      * @param SortConfig $sortConfig
      *
-     * @throws \Sidus\EAVModelBundle\Exception\MissingAttributeException
-     * @throws \UnexpectedValueException
+     * @throws MissingAttributeException
+     * @throws UnexpectedValueException
      */
     protected function applySort(SortConfig $sortConfig)
     {
@@ -228,7 +228,7 @@ class EAVQueryHandler extends DoctrineQueryHandler implements EAVQueryHandlerInt
     /**
      * {@inheritdoc}
      *
-     * @throws \UnexpectedValueException
+     * @throws UnexpectedValueException
      */
     protected function createPager(): Pagerfanta
     {

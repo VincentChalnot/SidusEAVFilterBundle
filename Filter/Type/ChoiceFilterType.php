@@ -2,7 +2,7 @@
 /*
  * This file is part of the Sidus/EAVFilterBundle package.
  *
- * Copyright (c) 2015-2018 Vincent Chalnot
+ * Copyright (c) 2015-2020 Vincent Chalnot
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -12,6 +12,8 @@ namespace Sidus\EAVFilterBundle\Filter\Type;
 
 use Sidus\EAVFilterBundle\Query\Handler\EAVQueryHandlerInterface;
 use Sidus\EAVModelBundle\Doctrine\AttributeQueryBuilderInterface;
+use Sidus\EAVModelBundle\Doctrine\DQLHandlerInterface;
+use Sidus\EAVModelBundle\Doctrine\EAVQueryBuilderInterface;
 use Sidus\FilterBundle\Exception\BadQueryHandlerException;
 use Sidus\FilterBundle\Filter\FilterInterface;
 use Sidus\FilterBundle\Query\Handler\QueryHandlerInterface;
@@ -32,7 +34,7 @@ class ChoiceFilterType extends AbstractSimpleFilterType
             throw new BadQueryHandlerException($queryHandler, EAVQueryHandlerInterface::class);
         }
         if (!$queryHandler->isEAVFilter($filter)) {
-            return $this->fallbackFilterType->getFormOptions($queryHandler, $filter);
+            return $this->getFallbackFormOptions($queryHandler, $filter);
         }
 
         if (isset($filter->getFormOptions()['choices'])) {
@@ -67,19 +69,34 @@ class ChoiceFilterType extends AbstractSimpleFilterType
     }
 
     /**
-     * @param AttributeQueryBuilderInterface $attributeQb
-     * @param mixed                          $data
-     *
-     * @return AttributeQueryBuilderInterface
+     * {@inheritDoc}
      */
     protected function applyAttributeQueryBuilder(
+        EAVQueryBuilderInterface $eavQb,
         AttributeQueryBuilderInterface $attributeQb,
         $data
-    ): AttributeQueryBuilderInterface {
+    ): DQLHandlerInterface {
         if (\is_array($data)) {
             return $attributeQb->in($data);
         }
 
         return $attributeQb->equals($data);
+    }
+
+    /**
+     * @param QueryHandlerInterface $queryHandler
+     * @param FilterInterface       $filter
+     *
+     * @return array
+     */
+    protected function getFallbackFormOptions(QueryHandlerInterface $queryHandler, FilterInterface $filter): array
+    {
+        if (!$this->fallbackFilterType) {
+            $m = "Filter '{$filter->getCode()}' with type '{$this->getName()}' has no EAV attribute and no ";
+            $m .= 'fallback filter type.';
+            throw new \LogicException($m);
+        }
+
+        return $this->fallbackFilterType->getFormOptions($queryHandler, $filter);
     }
 }

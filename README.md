@@ -11,7 +11,7 @@ the compatibility for the [Sidus/EAVModelBundle](https://github.com/VincentChaln
 Require this bundle with composer:
 
 ````bash
-$ composer require sidus/eav-filter-bundle "^1.3.5"
+$ composer require sidus/eav-filter-bundle "^3.0"
 ````
 
 ### Add the bundle to AppKernel.php

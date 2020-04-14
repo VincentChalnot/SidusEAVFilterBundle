@@ -10,7 +10,7 @@
     ],
     "homepage": "https://github.com/VincentChalnot/SidusEAVFilterBundle",
     "type": "library",
-    "license": "GPL-2.0",
+    "license": "MIT",
     "authors": [
         {
             "name": "Vincent Chalnot",
@@ -25,7 +25,7 @@
         }
     },
     "require": {
-        "sidus/eav-model-bundle": "dev-v1.3-dev",
-        "sidus/filter-bundle": "dev-v2.0-dev"
+        "sidus/eav-model-bundle": "v1.3.*|dev-v1.3-dev",
+        "sidus/filter-bundle": "v3.0.*|dev-v3.0-dev"
     }
 }
